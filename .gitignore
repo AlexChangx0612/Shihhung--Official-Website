@@ -42,3 +42,7 @@ next-env.d.ts
 
 # brainstorming companion
 .superpowers/
+
+# design skills (impeccable 檢查設定與快取、taste-skill 改版截圖)
+.impeccable/
+.taste-skill/
