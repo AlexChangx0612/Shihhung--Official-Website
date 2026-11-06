@@ -1,7 +1,7 @@
 // 匯入 Next.js 的網頁中繼資料型別（標題、描述等）
 import type { Metadata } from "next";
-// 匯入 Google 字型：Noto Sans TC（思源黑體繁中）與 Archivo（英文標題用寬體字）
-import { Archivo, Caveat, Noto_Sans_TC } from "next/font/google";
+// 匯入 Google 字型：Noto Sans TC（思源黑體繁中）、Noto Serif TC（思源宋體繁中）與 Archivo（英文標題用寬體字）
+import { Archivo, Caveat, Noto_Sans_TC, Noto_Serif_TC } from "next/font/google";
 // 匯入全站共用樣式
 import "./globals.css";
 // 匯入中文斷行補強（長句改在詞與詞之間換行）與不可拆開的專有名詞
@@ -19,6 +19,18 @@ const notoSans = Noto_Sans_TC({
   // 字型下載完成前先用系統字顯示，避免畫面空白
   display: "swap",
   // 不預先載入（中文字型檔很大，避免拖慢首頁）
+  preload: false,
+});
+
+// 宋體：Noto Serif TC，用於關於頁三個原則的章節名稱
+const notoSerif = Noto_Serif_TC({
+  // 註冊成 CSS 變數 --font-noto-serif
+  variable: "--font-noto-serif",
+  // 只載入 900（特粗）
+  weight: ["900"],
+  // 字型下載完成前先用系統字顯示
+  display: "swap",
+  // 不預先載入（中文字型檔很大）
   preload: false,
 });
 
@@ -64,7 +76,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // 語系設為繁體中文；套用兩組字型變數、滿版高度與文字抗鋸齒
     // data-scroll-behavior：換頁時直接跳到頂端，不用平滑捲動（同頁錨點仍平滑捲動）
-    <html lang="zh-Hant" data-scroll-behavior="smooth" className={`${notoSans.variable} ${archivo.variable} ${caveat.variable} h-full antialiased`}>
+    <html lang="zh-Hant" data-scroll-behavior="smooth" className={`${notoSans.variable} ${notoSerif.variable} ${archivo.variable} ${caveat.variable} h-full antialiased`}>
       {/* body 為直向排列、至少滿版高度，並全站使用無襯線粗體字；children 為各頁內容 */}
       <body className="flex min-h-full flex-col font-sans font-bold">
         {children}

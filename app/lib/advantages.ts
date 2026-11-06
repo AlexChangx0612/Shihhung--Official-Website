@@ -2,7 +2,7 @@
 // 專利與檢驗報告圖檔放在 public/certificates；取自關係企業中衛聯合開發官網最大解析度的版本
 // 拿到原始高解析檔案（PDF 或掃描檔）後，用同檔名覆蓋並更新下方的 width／height 即可
 
-// 三項優勢（/advantages 頁「選擇世紘，您多得到的三件事」）：圖文左右交錯
+// 三項優勢（/advantages 頁「選擇世紘，我們給您三個承諾」）：圖文左右交錯
 // 專員與客製的圖片為生成圖（public/about/specialist.jpg、branding-*.jpg），不是實際案例；台灣製造為產品去背圖
 export type Advantage = {
   title: string;
@@ -17,7 +17,7 @@ export const advantages: Advantage[] = [
   // 優勢 1
   {
     title: "一位資深專員，從頭陪您到底",
-    body: "熟悉全系列產品的資深專員，會先了解您的場地與人流，講解各款欄柱的材質、用途與差異，再為您規劃動線、估算欄柱與織帶數量，最後提出清楚的報價。從第一次諮詢到交貨，都由同一位專員負責。",
+    body: "熟悉全系列產品的資深專員，會先了解您的需求，為您說明各款產品的材質、用途與差異，再為您整合需求，最後提出清楚的報價。從諮詢到交貨，都由同一位專員負責。",
     images: [{ src: "/about/specialist.jpg", alt: "專員在場地平面圖上以鉛筆為客戶講解欄柱排隊動線", ratio: "16 / 9" }],
     href: "#contact",
     cta: "預約專員諮詢",
@@ -62,8 +62,8 @@ export const reports: Certificate[] = [
   { src: "/certificates/sgs1.jpg", width: 1000, height: 1420, title: "SGS 伸縮帶欄柱耐久測試", note: "織帶拉伸 10,000 次，無損壞" },
   { src: "/certificates/sgs3.jpg", width: 947, height: 1420, title: "SGS 織帶 REACH 檢測（英文）", note: "138 項高關注物質 SVHC，通過" },
   { src: "/certificates/sgs2.jpg", width: 947, height: 1420, title: "SGS 織帶 REACH 檢測（中文）", note: "138 項高關注物質 SVHC，通過" },
-  { src: "/certificates/certificate1.jpg", width: 1000, height: 1418, title: "金屬中心 鋁材鹽霧試驗", note: "24 小時鹽水噴霧，無可見腐蝕（1/2）" },
-  { src: "/certificates/certificate2.jpg", width: 1000, height: 1420, title: "金屬中心 鋁材鹽霧試驗", note: "試驗照片（2/2）" },
+  { src: "/certificates/certificate1.jpg", width: 1000, height: 1418, title: "金屬工業研究發展中心 鋁材鹽霧試驗", note: "24 小時鹽水噴霧，無可見腐蝕（1/2）" },
+  { src: "/certificates/certificate2.jpg", width: 1000, height: 1420, title: "金屬工業研究發展中心 鋁材鹽霧試驗", note: "試驗照片（2/2）" },
 ];
 
 // TÜV 萊因 REACH & SVHC 報告（多頁合併圖，橫式）

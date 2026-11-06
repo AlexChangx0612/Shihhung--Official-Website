@@ -6,19 +6,77 @@ import Image from "next/image";
 // 匯入 Next.js 站內連結元件
 import Link from "next/link";
 // 匯入 React 的副作用、參照與狀態 hook
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 // 匯入數字滾動
 import CountUp from "./CountUp";
 // 匯入共用樣式
 import { card, container, solidBtn, textLink } from "../lib/ui";
 
+// 星形多邊形頂點（cx, cy 為中心，r 為外徑，n 為角數，ratio 為內徑比例）
+function starPoints(cx: number, cy: number, r: number, n = 5, ratio = 0.38) {
+  return Array.from({ length: n * 2 }, (_, i) => {
+    const rad = (Math.PI * i) / n - Math.PI / 2;
+    const len = i % 2 === 0 ? r : r * ratio;
+    return `${(cx + len * Math.cos(rad)).toFixed(2)},${(cy + len * Math.sin(rad)).toFixed(2)}`;
+  }).join(" ");
+}
+
+// 各國國旗（簡化版 SVG，畫布 30×20）
+const flags: Record<string, ReactNode> = {
+  台灣: (
+    <>
+      <rect width="30" height="20" fill="#FE0000" />
+      <rect width="15" height="10" fill="#000095" />
+      <polygon points={starPoints(7.5, 5, 3.8, 12, 0.6)} fill="#fff" />
+      <circle cx="7.5" cy="5" r="2" fill="#000095" />
+      <circle cx="7.5" cy="5" r="1.6" fill="#fff" />
+    </>
+  ),
+  美國: (
+    <>
+      <rect width="30" height="20" fill="#fff" />
+      {Array.from({ length: 7 }, (_, i) => (
+        <rect key={i} y={(i * 20) / 6.5} width="30" height={20 / 13} fill="#B22234" />
+      ))}
+      <rect width="12" height={(20 / 13) * 7} fill="#3C3B6E" />
+    </>
+  ),
+  日本: (
+    <>
+      <rect width="30" height="20" fill="#fff" />
+      <circle cx="15" cy="10" r="6" fill="#BC002D" />
+    </>
+  ),
+  中國: (
+    <>
+      <rect width="30" height="20" fill="#EE1C25" />
+      <polygon points={starPoints(5, 5, 3)} fill="#FFFF00" />
+      {[[10, 2], [12, 4], [12, 7], [10, 9]].map(([x, y]) => (
+        <polygon key={`${x}-${y}`} points={starPoints(x, y, 1)} fill="#FFFF00" />
+      ))}
+    </>
+  ),
+  德國: (
+    <>
+      <rect width="30" height="20" fill="#FFCE00" />
+      <rect width="30" height="13.34" fill="#DD0000" />
+      <rect width="30" height="6.67" fill="#000" />
+    </>
+  ),
+  西班牙: (
+    <>
+      <rect width="30" height="20" fill="#AA151B" />
+      <rect y="5" width="30" height="10" fill="#F1BF00" />
+    </>
+  ),
+};
+
 // 取得專利的國家
 const patentCountries = ["台灣", "美國", "日本", "中國", "德國", "西班牙"];
 
-// 誠信：服務的四個步驟
+// 誠信：服務的三個步驟
 const steps = [
-  { title: "先聽場地", body: "人流、空間尺寸、使用情境，先了解再建議。" },
-  { title: "給規劃建議", body: "動線怎麼排、需要幾組，畫給你看。" },
+  { title: "先聽需求", body: "人流、空間尺寸、使用情境，先了解再建議。" },
   { title: "報價寫清楚", body: "品項、數量、客製內容、交期，一次說明。" },
   { title: "照承諾交貨", body: "答應的日期與規格，就是我們的標準。" },
 ];
@@ -34,15 +92,17 @@ function BeltPrint({ count = 14, gap = "gap-16 pl-7" }: { count?: number; gap?: 
   );
 }
 
-// 章節標籤：一小段織帶（進入畫面時拉出）＋原則名稱＋編號
-function ChapterTag({ name, no, dark = false }: { name: string; no: string; dark?: boolean }) {
+// 章節標籤：一小段織帶（進入畫面時拉出）＋宋體大字原則名稱＋延伸到欄寬的細線
+function ChapterTag({ name, dark = false }: { name: string; dark?: boolean }) {
   return (
-    <div className="flex items-center gap-4">
-      <div data-reveal className="belt-strip belt-tag h-[30px]">
+    <div className="flex items-center gap-5 sm:gap-7">
+      <div data-reveal className="belt-strip belt-tag h-[30px] flex-none">
         <BeltPrint count={4} gap="gap-10 pl-4" />
       </div>
-      <p className={`text-xl tracking-[0.1em] ${dark ? "text-brand" : "text-brand-deep"}`}>{name}</p>
-      <p className={`font-display text-[13px] tracking-[0.25em] ${dark ? "text-white/50" : "text-muted"}`}>{no}</p>
+      <p className={`font-serif text-[clamp(56px,7vw,92px)] leading-none font-black tracking-[0.04em] ${dark ? "text-brand" : "text-brand-deep"}`}>
+        {name}
+      </p>
+      <div aria-hidden="true" className={`h-px min-w-6 flex-1 ${dark ? "bg-brand/50" : "bg-brand-deep/40"}`} />
     </div>
   );
 }
@@ -120,7 +180,8 @@ export default function Principles() {
         </p>
         <div ref={pullRef} data-pull className="relative mt-16 h-[150px]">
           <Post className="left-0" />
-          <div ref={beltRef} className="belt-strip absolute top-1/2 left-[11px] h-11 w-[calc(100%-22px)] -translate-y-1/2">
+          {/* 織帶從柱頭正下方拉出（柱身頂端在 9px，柱頭下緣約 16px） */}
+          <div ref={beltRef} className="belt-strip absolute top-[19px] left-[11px] h-11 w-[calc(100%-22px)]">
             <BeltPrint />
           </div>
           <Post className="pull-end right-0" />
@@ -128,18 +189,18 @@ export default function Principles() {
       </div>
 
       {/* 01 創新：專利 */}
-      <article className="border-t border-line py-24 sm:pt-28 sm:pb-32">
+      <article className="overflow-x-clip border-t border-line py-24 sm:pt-28 sm:pb-32">
         <div className={container}>
-          <ChapterTag name="創新" no="01 / 03" />
+          <ChapterTag name="創新" />
           <div className="mt-10 flex flex-wrap items-center gap-16">
             <div className="min-w-0 flex-[1_1_420px]">
-              <h3 data-reveal className="reveal text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
-                每一個細節，
+              <h3 data-reveal className="reveal reveal-left text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
+                每一個不起眼的細節，
                 <br />
-                都改過好幾版。
+                都經過無數次打磨。
               </h3>
-              <p data-reveal className="reveal mt-6 max-w-[30em] text-lg leading-[1.8] delay-100">
-                公共空間的動線、展示與管理需求不斷改變。我們持續開發新產品，從結構設計到使用細節反覆改良，讓設備更好用、更耐用。
+              <p data-reveal className="reveal reveal-right mt-6 max-w-[30em] text-lg leading-[1.8] delay-100">
+                我們持續開發新產品，從結構設計到使用細節反覆改良，讓設備更好用、更耐用。
               </p>
               <p data-reveal className="reveal mt-10 flex items-baseline text-[clamp(56px,6vw,88px)] leading-none whitespace-nowrap delay-200">
                 <CountUp value={String(patentCountries.length)} />
@@ -147,8 +208,21 @@ export default function Principles() {
               </p>
               <ul data-reveal className="reveal mt-5 flex flex-wrap gap-2 delay-200">
                 {patentCountries.map((c) => (
-                  <li key={c} className="rounded-full bg-blush px-4 py-1.5 text-sm text-brand-deep">
-                    {c}
+                  <li key={c}>
+                    {/* 假按鈕：純裝飾，按了沒有動作 */}
+                    <button
+                      type="button"
+                      className="group inline-flex cursor-pointer items-center gap-2.5 rounded-full border border-brand-deep/15 bg-white/70 py-1.5 pr-4 pl-1.5 text-sm font-medium tracking-wide text-brand-deep shadow-[0_1px_2px_rgba(0,0,0,0.04)] backdrop-blur transition duration-300 ease-out hover:-translate-y-0.5 hover:border-brand-deep/40 hover:bg-white hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.25)] active:translate-y-0 active:scale-[0.97]"
+                    >
+                      <svg
+                        viewBox="0 0 30 20"
+                        aria-hidden="true"
+                        className="h-[18px] w-[27px] flex-none overflow-hidden rounded-[3px] ring-1 ring-black/10 transition-transform duration-300 group-hover:scale-110"
+                      >
+                        {flags[c]}
+                      </svg>
+                      {c}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -177,18 +251,18 @@ export default function Principles() {
       </article>
 
       {/* 02 品質：拉伸試驗（深色底，與世紘優勢頁的織帶牆同色） */}
-      <article className="bg-[#181818] py-24 text-white sm:pt-28 sm:pb-32">
+      <article className="overflow-x-clip bg-[#181818] py-24 text-white sm:pt-28 sm:pb-32">
         <div className={container}>
-          <ChapterTag name="品質" no="02 / 03" dark />
+          <ChapterTag name="品質" dark />
           <div className="mt-10 flex flex-wrap items-center gap-16">
             <div className="min-w-0 flex-[1_1_420px] lg:order-2">
-              <h3 data-reveal className="reveal text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
+              <h3 data-reveal className="reveal reveal-left text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
                 拉一萬次，
                 <br />
                 還是好好的。
               </h3>
-              <p data-reveal className="reveal mt-6 max-w-[30em] text-lg leading-[1.8] delay-100">
-                從選材、加工到表面處理，每個環節都以長期使用為標準。這不是形容詞，是 SGS 實驗室一次一次拉出來的結果。
+              <p data-reveal className="reveal reveal-right mt-6 max-w-[30em] text-lg leading-[1.8] delay-100">
+                從選材、加工到表面處理，每個環節都嚴格對待，「標準」不是形容詞，是 SGS 實驗室一次又一次的嚴格測試。
               </p>
               <p data-reveal className="reveal mt-10 flex items-baseline text-[clamp(56px,6vw,88px)] leading-none whitespace-nowrap delay-200">
                 <CountUp value="10,000" />
@@ -210,7 +284,7 @@ export default function Principles() {
                 ))}
               </dl>
               <p data-reveal className="reveal mt-7 border-l-[3px] border-brand bg-white/[.06] px-5 py-4 text-base font-medium delay-300">
-                <b className="mr-2 text-xl font-bold">24 小時</b>鋁材鹽霧試驗，無可見腐蝕（金屬中心）
+                <b className="mr-2 text-xl font-bold">24 小時</b>鋁材鹽霧試驗，無可見腐蝕（金屬工業研究發展中心）
               </p>
               <div data-reveal className="reveal mt-6 delay-300">
                 <Link href="/advantages#reports" className={textLink}>
@@ -224,10 +298,11 @@ export default function Principles() {
               <div className="rounded-[18px] bg-[#222] p-7 shadow-[0_0_0_1px_rgba(255,255,255,.08)]">
                 <div aria-hidden="true" className="relative h-[140px]">
                   <Post className="left-0" />
-                  <div className="belt-strip rig-belt absolute top-1/2 left-[11px] h-[30px] -translate-y-1/2">
+                  {/* 織帶從柱頭正下方的收納盒拉出（柱身頂端在 4px，柱頭下緣約 11px） */}
+                  <div className="belt-strip rig-belt absolute top-[14px] left-[11px] h-[30px]">
                     <BeltPrint count={6} gap="gap-10 pl-4" />
                   </div>
-                  <div className="rig-handle absolute top-1/2 h-[42px] w-3.5 -translate-y-1/2 rounded-[3px] bg-[linear-gradient(90deg,#555,#bbb,#555)]" />
+                  <div className="rig-handle absolute top-[8px] h-[42px] w-3.5 rounded-[3px] bg-[linear-gradient(90deg,#555,#bbb,#555)]" />
                 </div>
                 <div aria-hidden="true" className="mt-1.5 ml-[11px] flex justify-between border-t border-white/15 pt-1.5 font-display text-xs text-white/45">
                   <span>0</span>
@@ -256,23 +331,22 @@ export default function Principles() {
       </article>
 
       {/* 03 誠信：服務步驟 */}
-      <article className="py-24 sm:pt-28 sm:pb-32">
+      <article className="overflow-x-clip py-24 sm:pt-28 sm:pb-32">
         <div className={container}>
-          <ChapterTag name="誠信" no="03 / 03" />
+          <ChapterTag name="誠信" />
           <div className="mt-10 flex flex-wrap items-center gap-16">
             <div className="min-w-0 flex-[1_1_420px]">
-              <h3 data-reveal className="reveal text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
+              <h3 data-reveal className="reveal reveal-left text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
                 做得到的才答應，
                 <br />
                 答應的就做到。
               </h3>
-              <p data-reveal className="reveal mt-6 max-w-[30em] text-lg leading-[1.8] delay-100">
+              <p data-reveal className="reveal reveal-right mt-6 max-w-[30em] text-lg leading-[1.8] delay-100">
                 依場地與需求給規劃建議，說明清楚、承諾實在。不誇大、不隱藏。
               </p>
               <ol data-reveal className="reveal mt-9 delay-200">
-                {steps.map((s, i) => (
-                  <li key={s.title} className="grid grid-cols-[56px_1fr] border-t border-line py-[18px] last:border-b">
-                    <span className="pt-0.5 font-display text-[15px] text-brand-deep">0{i + 1}</span>
+                {steps.map((s) => (
+                  <li key={s.title} className="border-t border-line py-[18px] last:border-b">
                     <span>
                       <b className="text-lg">{s.title}</b>
                       <span className="mt-1 block text-base leading-[1.7] font-medium text-muted">{s.body}</span>

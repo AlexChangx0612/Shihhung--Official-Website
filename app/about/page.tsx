@@ -12,6 +12,8 @@ import BeltWall from "../components/BeltWall";
 import CountUp from "../components/CountUp";
 // 匯入結構化資料元件
 import JsonLd from "../components/JsonLd";
+// 匯入三支欄柱以織帶圍出動線的畫面
+import OrderStage from "../components/OrderStage";
 // 匯入內頁外框
 import PageShell from "../components/PageShell";
 // 匯入做事的三個原則
@@ -22,6 +24,15 @@ import { getCatalog } from "../lib/products";
 import { absoluteUrl, company, ORG_ID, organizationJsonLd, pageMetadata } from "../lib/site";
 // 匯入共用樣式
 import { container, textLink } from "../lib/ui";
+
+// 理念區塊下方展示的其他產品系列（slug 同時對應產品頁網址與去背圖檔名）
+const otherSeries = [
+  { slug: "digital-signage-lightbox", name: "數位看板・燈箱" },
+  { slug: "bulletin-boards", name: "佈告欄" },
+  { slug: "waste-recycling", name: "垃圾桶・資源回收" },
+  { slug: "rope-stanchions", name: "迎賓欄柱" },
+  { slug: "plastic-stanchions", name: "塑膠欄柱" },
+];
 
 // 頁面描述
 const description =
@@ -85,25 +96,58 @@ export default function AboutPage() {
         ]}
       />
 
-      {/* 理念：左文右圖（產品去背圖） */}
+      {/* 理念：左文（宋體標語）右圖（三支欄柱以織帶圍出動線＋其他系列小卡） */}
       <section className={`${container} flex flex-wrap items-center gap-16 pt-40`}>
         <div className="min-w-0 flex-[1_1_420px]">
-          <h2 className="text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
-            不只是一根欄柱，
+          {/* 依語意手動斷行，每行一個完整片語 */}
+          <h2 className="font-serif text-[clamp(24px,2.6vw,40px)] leading-[1.45] font-black">
+            每一項細節，
             <br />
-            而是一個空間的秩序。
+            世紘都用近乎<span className="text-brand-deep">「苛刻」</span>的標準
+            <br />
+            反覆審視，只為了交給您
+            <br />
+            最好的產品。
           </h2>
-          <p className="mt-8 max-w-[34em] text-base leading-[1.8]">
-            從銀行櫃台、醫院掛號到機場報到大廳，從百貨展示到學校與車站——好的設備不搶眼，它只是讓人流順暢、讓空間有序、讓使用的人安心。
+          <p className="mt-8 text-base leading-[1.9]">
+            從伸縮帶欄柱、海報架與告示牌，
+            <br />
+            到傘架、資源回收桶與推車，
+            <br />
+            13&nbsp;個產品系列，全在台灣製造、自己把關。
           </p>
-          <p className="mt-5 max-w-[34em] text-base leading-[1.8]">所以我們堅持在地製造、嚴格把關，產品取得多國專利並通過第三方檢驗，也為企業提供識別客製與禮贈品服務。</p>
+          <p className="mt-5 text-base leading-[1.9]">
+            它們站在銀行櫃台、醫院掛號、
+            <br />
+            機場報到大廳，也站在百貨、學校與車站。
+            <br />
+            好的設備不搶眼，只是讓人流順暢、
+            <br />
+            讓空間有序、讓使用的人安心。
+          </p>
         </div>
-        <figure className="min-w-0 flex-[1_1_420px] bg-white p-10">
-          <div className="relative aspect-[4/3]">
-            <Image src="/cutouts/retractable-belt-stanchions.png" alt="世紘伸縮帶欄柱產品去背圖" fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-contain" />
+        <div className="min-w-0 flex-[1.1_1_500px]">
+          <OrderStage />
+          {/* 其他系列小卡：點擊進入該系列產品頁 */}
+          <div className="mt-6 border-t border-black/15 pt-5">
+            <p className="text-[13px] text-muted">全系列共 13 類，以下為部分系列</p>
+            <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
+              {otherSeries.map((s) => (
+                <li key={s.slug}>
+                  <Link
+                    href={`/products/${s.slug}`}
+                    className="flex h-full flex-col items-center gap-2 rounded-xl bg-white px-2 py-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-10px_rgba(0,0,0,0.3)]"
+                  >
+                    <span className="relative h-16 w-full">
+                      <Image src={`/cutouts/${s.slug}.png`} alt="" fill sizes="96px" className="object-contain" />
+                    </span>
+                    <span className="text-center text-[12px] leading-tight">{s.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-          <figcaption className="mt-4 text-[15px] text-muted">伸縮帶欄柱系列，台灣製造</figcaption>
-        </figure>
+        </div>
       </section>
 
       {/* 客戶案例：第一張大圖，其餘四張小圖 */}

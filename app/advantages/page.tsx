@@ -4,20 +4,20 @@ import type { Metadata } from "next";
 import Image from "next/image";
 // 匯入 Next.js 站內連結元件
 import Link from "next/link";
-// 匯入左文右圖頁首與紅底數字帶
-import { SplitHero, StatBand } from "../components/AboutBlocks";
+// 匯入左文右圖頁首
+import { SplitHero } from "../components/AboutBlocks";
 // 匯入客製織帶牆
 import BeltWall from "../components/BeltWall";
-// 匯入證書格（點擊放大）
-import CertificateGallery from "../components/CertificateGallery";
 // 匯入數字滾動
 import CountUp from "../components/CountUp";
+// 匯入證據帳本（專利與檢驗報告，點擊放大）
+import EvidenceLedger from "../components/EvidenceLedger";
 // 匯入結構化資料元件
 import JsonLd from "../components/JsonLd";
 // 匯入內頁外框
 import PageShell from "../components/PageShell";
-// 匯入專利證書分頁
-import PatentTabs from "../components/PatentTabs";
+// 匯入進場動畫區塊
+import RevealSection from "../components/RevealSection";
 // 匯入優勢、專利與檢驗報告資料
 import { advantages, patents, reach, reports } from "../lib/advantages";
 // 匯入產品目錄
@@ -29,7 +29,7 @@ import { container, solidBtn, textLink } from "../lib/ui";
 
 // 頁面描述
 const description =
-  "世紘優勢：資深專員一對一服務、企業識別客製、全系列台灣製造，產品取得台灣、美國、日本、中國、德國、西班牙專利，並通過 SGS 耐久測試、REACH 檢測與金屬中心鹽霧試驗。";
+  "世紘優勢：資深專員一對一服務、企業識別客製、全系列台灣製造，產品取得台灣、美國、日本、中國、德國、西班牙專利，並通過 SGS 耐久測試、REACH 檢測與金屬工業研究發展中心鹽霧試驗。";
 
 // 中繼資料
 export const metadata: Metadata = pageMetadata({
@@ -69,24 +69,13 @@ export default function AdvantagesPage() {
               </div>
             ))}
           </div>
-          <figcaption className="mt-3 text-[15px] text-muted">SGS 與金屬中心出具的檢驗報告</figcaption>
+          <figcaption className="mt-3 text-[15px] text-muted">SGS 與金屬工業研究發展中心出具的檢驗報告</figcaption>
         </figure>
       </SplitHero>
 
-      {/* 紅底數字帶 */}
-      <StatBand
-        title="這些數字，都有報告可查"
-        stats={[
-          { value: "6", unit: "國", extra: "取得專利", label: "台灣、美國、日本、中國、德國、西班牙" },
-          { value: "10,000", unit: "次", label: "織帶拉伸無損壞（SGS 耐久測試）" },
-          { value: "24", unit: "小時", label: "鋁材鹽霧試驗無可見腐蝕（金屬中心）" },
-          { value: "138", unit: "項", label: "高關注物質 SVHC 檢測通過（SGS）" },
-        ]}
-      />
-
       {/* 三項優勢：圖文左右交錯（第 2 項圖在左） */}
       <section className={`${container} pt-40`}>
-        <h2 className={h2}>選擇世紘，您多得到的三件事</h2>
+        <h2 className={h2}>選擇世紘，我們給您三個承諾</h2>
         {advantages.map((a, i) => {
           const flip = i % 2 === 1;
           return (
@@ -136,25 +125,46 @@ export default function AdvantagesPage() {
         </div>
       </section>
 
-      {/* 專利證書：國家分頁 */}
-      <section id="patents" className={`${container} scroll-mt-24 pt-40`}>
-        <h2 className={h2}>六國專利證書</h2>
-        <p className="mt-4 text-base leading-[1.7]">產品設計在台灣、美國、日本、中國、德國與西班牙取得專利。</p>
-        <PatentTabs items={patents} />
-      </section>
-
-      {/* 檢驗報告：點擊放大 */}
-      <section id="reports" className={`${container} scroll-mt-24 pt-40 pb-40`}>
-        <h2 className={h2}>第三方檢驗報告</h2>
-        <p className="mt-4 text-base leading-[1.7]">耐久度、耐腐蝕與有害物質，皆送公正第三方實驗室檢驗。點擊圖片可放大檢視。</p>
-        <div className="mt-12">
-          <CertificateGallery items={reports} cols={5} />
+      {/* 專利報告與專業機構檢驗：證據帳本（數字旁就是出具機構與報告，捲動進場） */}
+      <RevealSection id="patents" className={`${container} scroll-mt-24 pt-40 pb-40`}>
+        {/* 舊錨點 #reports（關於頁連到這裡） */}
+        <span id="reports" className="block scroll-mt-24" />
+        {/* 章節標籤：織帶拉出＋宋體大字＋細線（與關於頁三個原則相同） */}
+        <div className="flex items-center gap-5 sm:gap-7">
+          <div data-reveal className="belt-strip belt-tag h-[30px] flex-none">
+            <div aria-hidden="true" className="flex h-full items-center gap-10 pl-4">
+              {Array.from({ length: 4 }, (_, i) => (
+                <Image key={i} src="/brand/logo-shung-white.png" alt="" width={240} height={139} className="h-[62%] w-auto max-w-none flex-none" />
+              ))}
+            </div>
+          </div>
+          <h2 className="font-serif text-[clamp(30px,4.6vw,64px)] leading-[1.15] font-black tracking-[0.04em] text-brand-deep">專利報告與專業機構檢驗</h2>
+          <div aria-hidden="true" className="h-px min-w-6 flex-1 bg-brand-deep/40" />
         </div>
-        {/* TÜV REACH 報告：橫式多頁合併圖，獨立一列 */}
-        <div className="mx-auto mt-5 max-w-4xl">
-          <CertificateGallery items={[reach]} cols={1} />
+        {/* 標語從左滑入，說明從右滑入 */}
+        <div className="mt-12 flex flex-wrap items-end justify-between gap-8">
+          <p data-reveal className="reveal reveal-left font-serif text-[clamp(34px,3.6vw,54px)] leading-[1.3] font-black">
+            品質，
+            <br />
+            不只是我們說了算。
+          </p>
+          <p data-reveal className="reveal reveal-right max-w-[30em] text-base leading-[1.9] text-ink/80 delay-100">
+            產品設計在六個國家取得專利，
+            <br />
+            耐用度、耐腐蝕與材料安全，
+            <br />
+            皆通過 SGS、TÜV&nbsp;萊因與金屬工業研究發展中心的檢驗。
+          </p>
         </div>
-      </section>
+        <EvidenceLedger
+          patents={patents}
+          rows={[
+            { value: "10,000", unit: "次", claim: "織帶反覆拉出、收回一萬次，沒有損壞。", agency: "SGS", docs: [reports[0]] },
+            { value: "24", unit: "小時", claim: "鋁材連續鹽水噴霧 24 小時，沒有可見腐蝕。", agency: "金屬工業研究發展中心", docs: [reports[3], reports[4]] },
+            { value: "138", unit: "項", claim: "織帶通過 138 項高關注物質（SVHC）檢測。", agency: "SGS · TÜV", docs: [reports[2], reports[1], reach] },
+          ]}
+        />
+      </RevealSection>
     </PageShell>
   );
 }

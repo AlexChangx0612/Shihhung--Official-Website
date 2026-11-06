@@ -52,6 +52,8 @@
   --font-sans: var(--font-noto-sans), "PingFang TC", "Microsoft JhengHei", sans-serif;
   /* 英文標題字：Archivo（中文字自動改用 Noto Sans TC） */
   --font-display: var(--font-archivo), var(--font-noto-sans), sans-serif;
+  /* 宋體：Noto Serif TC（關於頁三個原則的章節名稱），載入失敗時改用系統宋體 */
+  --font-serif: var(--font-noto-serif), "PMingLiU", "Songti TC", serif;
   /* 手寫字：Caveat（客戶案例區的手寫註記） */
   --font-hand: var(--font-caveat), cursive;
 }
@@ -198,6 +200,14 @@ body {
 [data-armed] .reveal:not([data-in]) {
   opacity: 0;
   transform: translateY(24px);
+}
+/* 從左滑入（三個原則的標語） */
+[data-armed] .reveal-left:not([data-in]) {
+  transform: translateX(-64px);
+}
+/* 從右滑入（標語下方的說明文字） */
+[data-armed] .reveal-right:not([data-in]) {
+  transform: translateX(64px);
 }
 
 /* 章節標籤的小段織帶：進入畫面時由 0 拉到 120px */
