@@ -73,17 +73,31 @@ export default function AboutPage() {
       {/* 頁首：左文右圖 */}
       <SplitHero
         crumbs={[{ name: "首頁", path: "/" }, { name: "關於世紘", path: "/about" }]}
-        title="關於世紘"
-        subtitle={`世紘興業 ${company.foundingYear} 年在新北林口成立，設計與製造伸縮帶欄柱、紅龍柱、告示牌等公共空間設備，${categories.length} 個產品系列全部在台灣生產。`}
+        title={
+          // 「世紘」用品牌紅，與下方標語的「苛刻」呼應
+          <>
+            關於<span className="text-brand">世紘</span>
+          </>
+        }
+        subtitle={
+          // 依語意手動斷行；底文灰字，只讓產品與「台灣生產」以黑色特粗跳出來
+          <span className="text-muted">
+            世紘興業 {company.foundingYear} 年在新北林口成立，
+            <br />
+            設計與製造<strong className="font-black text-ink">伸縮帶欄柱、紅龍柱、</strong>
+            <br />
+            <strong className="font-black text-ink">告示牌</strong>等公共空間設備，
+            <br />
+            {categories.length}&nbsp;個產品系列全部在<strong className="font-black text-brand-deep">台灣生產</strong>。
+          </span>
+        }
         link={{ href: "/products", label: "瀏覽產品系列" }}
+        hideCta
       >
-        <figure>
-          <div className="relative aspect-[16/10]">
-            {/* 直式圖裁成 16:10，往上對齊，保留公司招牌與織帶 */}
-            <Image src="/about/branding-stanchions.jpg" alt="世紘興業公司招牌前，兩支黑色伸縮帶欄柱拉開印有世紘標誌的紅色織帶" fill preload sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover object-[center_10%]" />
-          </div>
-          <figcaption className="mt-3 text-[15px] text-muted">世紘興業：印上 Shung 標誌的伸縮帶欄柱</figcaption>
-        </figure>
+        <div className="relative aspect-[16/10]">
+          {/* 直式圖裁成 16:10，往上對齊，保留公司招牌與織帶 */}
+          <Image src="/about/branding-stanchions.jpg" alt="世紘興業公司招牌前，兩支黑色伸縮帶欄柱拉開印有世紘標誌的紅色織帶" fill preload sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover object-[center_10%]" />
+        </div>
       </SplitHero>
 
       {/* 紅底數字帶 */}
@@ -103,11 +117,9 @@ export default function AboutPage() {
           <h2 className="font-serif text-[clamp(24px,2.6vw,40px)] leading-[1.45] font-black">
             每一項細節，
             <br />
-            世紘都用近乎<span className="text-brand-deep">「苛刻」</span>的標準
+            世紘都用近乎<span className="text-brand-deep">「苛刻」</span>的標準審視，
             <br />
-            反覆審視，只為了交給您
-            <br />
-            最好的產品。
+            只為了交給您最好的產品。
           </h2>
           <p className="mt-8 text-base leading-[1.9]">
             從伸縮帶欄柱、海報架與告示牌，
@@ -154,7 +166,7 @@ export default function AboutPage() {
       <section className={`${container} pt-40`}>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h2 className="text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">我們的設備，站在這些地方</h2>
+            <h2 className="text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">我們的產品「無處不見」</h2>
             <p className="mt-4 text-base leading-[1.7]">寺廟、門市、文化園區、商辦與展覽，每一張都是客戶現場。</p>
           </div>
           <Link href="/cases" className={textLink}>

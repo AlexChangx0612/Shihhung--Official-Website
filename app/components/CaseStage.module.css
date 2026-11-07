@@ -1,0 +1,155 @@
+/* 案例總覽頁的兩個互動元件：照片修飾、「看完整案例」按鈕、大圖右側的案例索引 */
+
+/* 照片修飾：手機拍攝的現場照偏灰偏暗，略提亮度、對比與飽和度，讓八個案例色調一致 */
+.tone {
+  filter: brightness(1.04) contrast(1.08) saturate(1.12);
+}
+
+/* ===== 「看完整案例」按鈕 ===== */
+/* 改自 Uiverse.io by cssbuttons-io（learn-more，MIT）：紅色圓圈滑鼠移上時展開成整顆按鈕，箭頭向右滑 */
+.more {
+  position: relative;
+  display: inline-block;
+  width: 12.5rem;
+  height: 3rem;
+  text-decoration: none;
+}
+
+/* 紅色圓圈（展開後成為按鈕底色） */
+.circle {
+  position: relative;
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1.5rem;
+  background: var(--color-brand-deep);
+  transition: width 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+}
+
+/* 箭頭的橫線 */
+.arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.75rem;
+  width: 1.125rem;
+  height: 0.125rem;
+  margin: auto;
+  background: none;
+  transition:
+    transform 0.45s cubic-bezier(0.65, 0, 0.076, 1),
+    background 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+}
+
+/* 箭頭的尖端 */
+.arrow::before {
+  position: absolute;
+  top: -0.29rem;
+  right: 0.0625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-top: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  transform: rotate(45deg);
+  content: "";
+}
+
+/* 按鈕文字 */
+.label {
+  position: absolute;
+  inset: 0 0 0 3.6rem;
+  display: flex;
+  align-items: center;
+  color: var(--color-ink);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  transition:
+    color 0.45s cubic-bezier(0.65, 0, 0.076, 1),
+    transform 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+}
+
+/* 滑鼠移上或鍵盤聚焦：圓圈展開、箭頭露出橫線並右移、文字變白 */
+.more:hover .circle,
+.more:focus-visible .circle {
+  width: 100%;
+}
+.more:hover .arrow,
+.more:focus-visible .arrow {
+  background: #fff;
+  transform: translateX(0.9rem);
+}
+.more:hover .label,
+.more:focus-visible .label {
+  color: #fff;
+  transform: translateX(0.4rem);
+}
+
+/* ===== 大圖右側的案例索引 ===== */
+/* 提示框改自 Uiverse.io by elijahgummer（slimy-bobcat，MIT）：滑鼠移上時以回彈曲線滑出 */
+.rail {
+  position: absolute;
+  top: 50%;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  transform: translateY(-50%);
+}
+
+/* 一個刻度（按鈕，點擊跳到該案例） */
+.tick {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 2.75rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
+/* 刻度的線 */
+.tick::after {
+  width: 1rem;
+  height: 3px;
+  background: rgb(255 255 255 / 0.55);
+  content: "";
+  transition:
+    width 0.3s ease-out,
+    background 0.3s ease-out;
+}
+.tick:hover::after,
+.tick[aria-current="true"]::after {
+  width: 2.5rem;
+  background: #fff;
+}
+
+/* 提示框：案例名稱，平常藏在刻度左側 */
+.tip {
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  padding: 0.35em 0.8em;
+  white-space: nowrap;
+  color: var(--color-ink);
+  background: #fff;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(0.75rem);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+.tick:hover .tip,
+.tick:focus-visible .tip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 減少動態偏好：取消滑動，只保留顏色變化 */
+@media (prefers-reduced-motion: reduce) {
+  .circle,
+  .arrow,
+  .label,
+  .tip {
+    transition-duration: 0.01ms;
+  }
+}

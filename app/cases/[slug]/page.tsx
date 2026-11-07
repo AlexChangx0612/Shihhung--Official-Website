@@ -58,12 +58,12 @@ export default async function CasePage({ params }: PageProps<"/cases/[slug]">) {
   const next = cases[(i + 1) % cases.length];
   // 相關產品系列（找不到的略過）
   const related = c.related.map(getCategory).filter((cat) => cat !== undefined);
-  // 重點資訊列四格
+  // 重點資訊列四格；使用產品與客製內容依頓號拆開，一項一行
   const facts = [
-    { label: "客戶", value: c.client },
-    { label: "地點", value: c.location },
-    { label: "使用產品", value: c.products },
-    { label: "客製內容", value: c.custom },
+    { label: "客戶", value: [c.client] },
+    { label: "地點", value: [c.location] },
+    { label: "使用產品", value: c.products.split("、") },
+    { label: "客製內容", value: c.custom.split("、") },
   ];
 
   return (
@@ -106,7 +106,13 @@ export default async function CasePage({ params }: PageProps<"/cases/[slug]">) {
             {facts.map((f) => (
               <div key={f.label} className="border-b border-line py-5 pr-4 lg:border-b-0">
                 <dt className="text-xs tracking-[0.25em] text-muted">{f.label}</dt>
-                <dd className="mt-2 text-sm leading-7 text-ink">{f.value}</dd>
+                <dd className="mt-2 text-sm leading-7 text-ink">
+                  <ul>
+                    {f.value.map((v) => (
+                      <li key={v}>{v}</li>
+                    ))}
+                  </ul>
+                </dd>
               </div>
             ))}
           </dl>

@@ -16,13 +16,16 @@ export function SplitHero({
   title,
   subtitle,
   link,
+  hideCta = false,
   children,
 }: {
   crumbs: Crumb[];
-  title: string;
-  subtitle: string;
+  title: React.ReactNode;
+  subtitle: React.ReactNode;
   // 次要連結（主按鈕固定為「預約專員諮詢」）
   link: { href: string; label: string };
+  // 隱藏「預約專員諮詢」主按鈕
+  hideCta?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -32,9 +35,11 @@ export function SplitHero({
         <h1 className="mt-10 text-[clamp(44px,6vw,88px)] leading-none font-bold">{title}</h1>
         <p className="mt-8 max-w-[30em] text-[clamp(18px,1.5vw,21px)] leading-[1.7]">{subtitle}</p>
         <div className="mt-10 flex flex-wrap items-center gap-6">
-          <a href="#contact" className={solidBtn}>
-            預約專員諮詢
-          </a>
+          {!hideCta && (
+            <a href="#contact" className={solidBtn}>
+              預約專員諮詢
+            </a>
+          )}
           <Link href={link.href} className={textLink}>
             {link.label} →
           </Link>
