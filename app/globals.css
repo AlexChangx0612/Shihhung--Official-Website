@@ -108,6 +108,22 @@ body {
   }
 }
 
+/* 動畫：搜尋面板往上收回畫面上方之外（關閉時） */
+@keyframes hdr-out {
+  /* 終點：完全在畫面上方之外 */
+  to {
+    transform: translateY(calc(-100% - 48px));
+  }
+}
+
+/* 動畫：淡出 */
+@keyframes fade-out {
+  /* 終點：完全透明 */
+  to {
+    opacity: 0;
+  }
+}
+
 /* 動畫：側邊選單從左側滑入 */
 @keyframes drawer-in {
   /* 起點：整個選單位於畫面左外側 */

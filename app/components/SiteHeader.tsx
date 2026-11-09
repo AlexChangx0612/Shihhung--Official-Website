@@ -33,8 +33,8 @@ const navLeft = [
 const navRight = [
   // 關於世紘 → 關於頁
   { href: "/about", label: "關於世紘" },
-  // 世紘優勢 → 優勢、專利與檢驗報告頁
-  { href: "/advantages", label: "世紘優勢" },
+  // 國際認證 → 優勢、專利與檢驗報告頁
+  { href: "/advantages", label: "國際認證" },
   // 常見問題 → 首頁常見問題區塊
   { href: "/#faq", label: "常見問題" },
   // 聯絡我們 → 聯絡我們頁面

@@ -5,11 +5,9 @@ import Image from "next/image";
 // 匯入 Next.js 站內連結元件
 import Link from "next/link";
 // 匯入左文右圖頁首與紅底數字帶
-import { SplitHero, StatBand } from "../components/AboutBlocks";
+import { PhotoHero, StatBand } from "../components/AboutBlocks";
 // 匯入客製織帶牆
 import BeltWall from "../components/BeltWall";
-// 匯入數字滾動
-import CountUp from "../components/CountUp";
 // 匯入結構化資料元件
 import JsonLd from "../components/JsonLd";
 // 匯入三支欄柱以織帶圍出動線的畫面
@@ -70,35 +68,21 @@ export default function AboutPage() {
         ]}
       />
 
-      {/* 頁首：左文右圖 */}
-      <SplitHero
+      {/* 頁首：滿版照片橫幅 */}
+      <PhotoHero
         crumbs={[{ name: "首頁", path: "/" }, { name: "關於世紘", path: "/about" }]}
-        title={
-          // 「世紘」用品牌紅，與下方標語的「苛刻」呼應
+        eyebrow="About Shung"
+        title="關於世紘"
+        subtitle={
+          // 照片上白字；產品與「台灣生產」以特粗跳出來
           <>
-            關於<span className="text-brand">世紘</span>
+            世紘興業 {company.foundingYear} 年在新北林口成立，設計與製造<strong className="font-black">伸縮帶欄柱、紅龍柱、告示牌</strong>
+            等公共空間設備，{categories.length}&nbsp;個產品系列全部在<strong className="font-black">台灣生產</strong>。
           </>
         }
-        subtitle={
-          // 依語意手動斷行；底文灰字，只讓產品與「台灣生產」以黑色特粗跳出來
-          <span className="text-muted">
-            世紘興業 {company.foundingYear} 年在新北林口成立，
-            <br />
-            設計與製造<strong className="font-black text-ink">伸縮帶欄柱、紅龍柱、</strong>
-            <br />
-            <strong className="font-black text-ink">告示牌</strong>等公共空間設備，
-            <br />
-            {categories.length}&nbsp;個產品系列全部在<strong className="font-black text-brand-deep">台灣生產</strong>。
-          </span>
-        }
-        link={{ href: "/products", label: "瀏覽產品系列" }}
-        hideCta
-      >
-        <div className="relative aspect-[16/10]">
-          {/* 直式圖裁成 16:10，往上對齊，保留公司招牌與織帶 */}
-          <Image src="/about/branding-stanchions.jpg" alt="世紘興業公司招牌前，兩支黑色伸縮帶欄柱拉開印有世紘標誌的紅色織帶" fill preload sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover object-[center_10%]" />
-        </div>
-      </SplitHero>
+        // AI 生成圖：工坊裡組裝伸縮帶欄柱；對齊點偏右上，保留柱頭、雙手與織帶
+        image={{ src: "/about/about-workshop.png", alt: "工坊裡，戴著黑色皮革工作手套的雙手握住鍍鉻伸縮帶欄柱，紅色織帶從柱頭拉出", position: "70% 40%" }}
+      />
 
       {/* 紅底數字帶 */}
       <StatBand
@@ -191,11 +175,9 @@ export default function AboutPage() {
       <section className="pt-24">
         <BeltWall rows={[0, 3]} label="世紘承接過的客製伸縮帶印刷圖樣" />
         <div className={`${container} flex flex-wrap items-center justify-between gap-4 pt-6`}>
-          <h2 className="text-xl font-bold">
-            還有 <CountUp value="61" /> 款客製織帶，從品牌門市到宮廟與學校
-          </h2>
-          <Link href="/advantages#belts" className={textLink}>
-            看全部客製織帶 →
+          <h2 className="text-xl font-bold">您去過的地方，無處不見世紘</h2>
+          <Link href="/custom#belts" className={textLink}>
+            看全部客製伸縮欄柱 →
           </Link>
         </div>
       </section>

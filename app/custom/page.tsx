@@ -1,9 +1,9 @@
 // 匯入 Next.js 網頁中繼資料型別
 import type { Metadata } from "next";
-// 匯入 Next.js 站內連結元件
-import Link from "next/link";
 // 匯入客製織帶牆
 import BeltWall from "../components/BeltWall";
+// 匯入數字滾動
+import CountUp from "../components/CountUp";
 // 匯入麵包屑
 import Breadcrumbs from "../components/Breadcrumbs";
 // 匯入常見問題清單
@@ -21,7 +21,7 @@ import { customOptions } from "../lib/custom-options";
 // 匯入 SEO 工具
 import { absoluteUrl, faqJsonLd, pageMetadata } from "../lib/site";
 // 匯入共用樣式
-import { container, pageTop, textLink } from "../lib/ui";
+import { container, pageTop, solidBtn } from "../lib/ui";
 
 // 頁面描述
 const description =
@@ -144,16 +144,23 @@ export default function CustomPage() {
         </p>
       </section>
 
-      {/* 客製織帶牆：歷年 61 款客製織帶 */}
-      <section className="pt-32 sm:pt-44">
-        <div className={`${container} flex flex-wrap items-end justify-between gap-6`}>
-          <h2 className="text-[clamp(28px,3vw,46px)] leading-[1.2] font-black">已經印過 61 款客製織帶</h2>
-          <Link href="/advantages#belts" className={textLink}>
-            看全部客製織帶 →
-          </Link>
+      {/* 客製織帶牆：深色底，讓五顏六色的織帶當主角 */}
+      <section id="belts" className="mt-32 scroll-mt-24 bg-[#181818] py-28 text-white sm:mt-44">
+        <div className={`${container} flex flex-wrap items-end justify-between gap-8`}>
+          <div className="min-w-0 flex-[1_1_520px]">
+            <h2 className="text-[clamp(30px,3vw,44px)] leading-[1.3] font-bold">
+              超過 <CountUp value="100" /> 款客製織帶，都出自於世紘
+            </h2>
+            <p className="mt-5 max-w-[36em] text-base leading-[1.8]">
+              從 gogoro、Dyson、McLaren、太魯閣購物中心，到竹林山觀音寺、高雄捷運與苗栗警察分局。每一條都是我們為客戶印製、實際上線的伸縮帶。
+            </p>
+          </div>
+          <a href="#contact" className={solidBtn}>
+            印上您的品牌
+          </a>
         </div>
-        <div className="mt-10">
-          <BeltWall rows={[0, 2, 4, 6]} label="世紘承接過的客製伸縮帶印刷圖樣" />
+        <div className="mt-16">
+          <BeltWall label="世紘歷年承接的客製伸縮帶印刷圖樣，包含 gogoro、Nike、小米、Dyson、McLaren、Longchamp、竹林山觀音寺、高雄捷運等" />
         </div>
       </section>
 

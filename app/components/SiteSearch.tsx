@@ -68,15 +68,27 @@ export default function SiteSearch({ className = "" }: { className?: string }) {
   const input = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // 關閉面板
-  const close = () => setOpen(false);
+  // 是否正在播放往上收起的動畫
+  const [closing, setClosing] = useState(false);
+
+  // 關閉面板：先播放往上收起的動畫，播完（onAnimationEnd）才真正關閉；系統設定減少動態效果時直接關閉
+  const close = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setOpen(false);
+    else setClosing(true);
+  };
+  // 收起動畫播完：關閉面板並重設狀態
+  const finishClose = (e: React.AnimationEvent) => {
+    if (e.target !== e.currentTarget || !closing) return;
+    setClosing(false);
+    setOpen(false);
+  };
 
   // 打開時：載入索引、聚焦輸入框、鎖住背景捲動、Esc 關閉
   useEffect(() => {
     if (!open) return;
     loadIndex().then(setIndex).catch(() => setIndex([]));
     input.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
@@ -120,9 +132,17 @@ export default function SiteSearch({ className = "" }: { className?: string }) {
       {open && (
         <div role="dialog" aria-modal="true" aria-label="站內搜尋" className="fixed inset-0 z-50">
           {/* 背景：點擊關閉 */}
-          <button type="button" aria-label="關閉搜尋" onClick={close} className="absolute inset-0 animate-[fade-in_.3s_ease-out] bg-ink/30" />
-          {/* 面板：浮動白色卡片（與頁首相同的下緣圓角），內容過長可捲動 */}
-          <div className="absolute inset-x-2 top-0 flex max-h-[88vh] motion-safe:animate-[hdr-in_.5s_cubic-bezier(.16,1,.3,1)_both] flex-col rounded-b-[18px] bg-white shadow-[0_16px_36px_-24px_rgba(15,15,14,.3)] sm:inset-x-6 lg:inset-x-10 lg:rounded-b-[22px]">
+          <button
+            type="button"
+            aria-label="關閉搜尋"
+            onClick={close}
+            className={`absolute inset-0 bg-ink/30 ${closing ? "animate-[fade-out_.35s_ease-in_both]" : "animate-[fade-in_.3s_ease-out]"}`}
+          />
+          {/* 面板：浮動白色卡片（與頁首相同的下緣圓角），內容過長可捲動；打開時從上方滑入，關閉時往上收起 */}
+          <div
+            onAnimationEnd={finishClose}
+            className={`absolute inset-x-2 top-0 flex max-h-[88vh] ${closing ? "animate-[hdr-out_.35s_cubic-bezier(.7,0,.84,0)_both]" : "motion-safe:animate-[hdr-in_.5s_cubic-bezier(.16,1,.3,1)_both]"} flex-col rounded-b-[18px] bg-white shadow-[0_16px_36px_-24px_rgba(15,15,14,.3)] sm:inset-x-6 lg:inset-x-10 lg:rounded-b-[22px]`}
+          >
             {/* 輸入列 */}
             <form role="search" onSubmit={submit} className="mx-auto flex w-full max-w-4xl items-center gap-3 border-b border-line px-5 pt-6 pb-4 sm:gap-4 sm:px-8 sm:pt-10">
               <SearchIcon className="h-6 w-6 shrink-0 text-brand-deep" />

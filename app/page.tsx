@@ -18,8 +18,8 @@ import HeroMosaic from "./components/HeroMosaic";
 import ProductCatalog from "./components/ProductCatalog";
 // 匯入區塊標題元件
 import SectionTitle from "./components/SectionTitle";
-// 匯入底部品牌紅色色帶
-import { FooterBar } from "./components/SiteFooter";
+// 匯入頁尾
+import SiteFooter from "./components/SiteFooter";
 // 匯入頁首
 import SiteHeader from "./components/SiteHeader";
 // 匯入讀取產品圖片的函式
@@ -38,7 +38,7 @@ export const metadata: Metadata = pageMetadata({ title: HOME_TITLE, description:
 
 // 「關於世紘」區塊的延伸閱讀連結
 const more = [
-  { href: "/advantages", label: "世紘優勢", desc: "多國專利與第三方檢驗" },
+  { href: "/advantages", label: "國際認證", desc: "多國專利與第三方檢驗" },
   { href: "/custom", label: "客製化服務", desc: "置入企業識別" },
   { href: "/catalog", label: "產品電子目錄", desc: "線上瀏覽與 PDF 下載" },
 ];
@@ -134,10 +134,8 @@ export default function Home() {
         </section>
       </main>
 
-      {/* 底部品牌紅色色帶 */}
-      <footer>
-        <FooterBar />
-      </footer>
+      {/* 頁尾 */}
+      <SiteFooter />
     </div>
   );
 }
