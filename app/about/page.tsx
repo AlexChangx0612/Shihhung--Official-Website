@@ -81,7 +81,7 @@ export default function AboutPage() {
           </>
         }
         // AI 生成圖：工坊裡組裝伸縮帶欄柱；對齊點偏右上，保留柱頭、雙手與織帶
-        image={{ src: "/about/about-workshop.png", alt: "工坊裡，戴著黑色皮革工作手套的雙手握住鍍鉻伸縮帶欄柱，紅色織帶從柱頭拉出", position: "70% 40%" }}
+        image={{ src: "/about/about-workshop.png", alt: "工坊裡，戴著深灰色工作手套的雙手握住鍍鉻伸縮帶欄柱，紅色織帶從柱頭拉出", position: "70% 40%" }}
       />
 
       {/* 紅底數字帶 */}

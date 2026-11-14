@@ -2,18 +2,18 @@
 import type { Metadata } from "next";
 // 匯入 Next.js 圖片元件
 import Image from "next/image";
-// 匯入麵包屑
-import Breadcrumbs from "../components/Breadcrumbs";
+// 匯入滿版照片頁首
+import { PhotoHero } from "../components/AboutBlocks";
 // 匯入結構化資料元件
 import JsonLd from "../components/JsonLd";
-// 匯入內頁外框（底部已有紅色聯絡區塊：電話、E-MAIL、LINE）
+// 匯入內頁外框（此頁關閉底部紅色聯絡區塊，聯絡資訊已列在頁面中）
 import PageShell from "../components/PageShell";
 // 匯入區塊標題
 import SectionTitle from "../components/SectionTitle";
 // 匯入公司資料與 SEO 工具
 import { absoluteUrl, company, organizationJsonLd, pageMetadata } from "../lib/site";
 // 匯入共用樣式
-import { container, pageTop } from "../lib/ui";
+import { container } from "../lib/ui";
 
 // 頁面描述
 const description = `聯絡世紘興業：電話 ${company.phone}、Email ${company.email}、LINE 官方帳號，提供紅龍柱、欄柱與公共空間設備，專員為您提供規劃。`;
@@ -41,26 +41,26 @@ const rows: { label: string; value: string; href?: string; external?: boolean }[
 // 聯絡我們頁
 export default function ContactPage() {
   return (
-    <PageShell footerBarOnly>
+    <PageShell footerBarOnly hideContact>
       {/* 結構化資料：聯絡頁＋公司（含地址、電話與營業時間） */}
       <JsonLd data={[{ "@type": "ContactPage", name: "聯絡我們", description, url: absoluteUrl("/contact") }, organizationJsonLd()]} />
 
-      <section className={`${pageTop} pb-20 sm:pb-28`}>
+      {/* 頁首：滿版照片橫幅（與其他內頁同一個元件） */}
+      <PhotoHero
+        crumbs={[{ name: "首頁", path: "/" }, { name: "聯絡我們", path: "/contact" }]}
+        eyebrow="Contact Us"
+        title="聯絡我們"
+        subtitle="告訴我們您的場地與需求，專員為您提供規劃。詢問特定產品時，請提供產品頁上的型號或品項編號。"
+        image={{ src: "/contact/contact-hero.png", alt: "客服人員在接待櫃台接聽電話，翻閱產品目錄為客戶解答問題", position: "88% 50%" }}
+      />
+
+      <section className="pt-16 pb-20 sm:pb-28 lg:pt-24">
         <div className={`${container} grid gap-12 lg:grid-cols-2 lg:gap-20`}>
-          <div>
-            <Breadcrumbs items={[{ name: "首頁", path: "/" }, { name: "聯絡我們", path: "/contact" }]} />
-            <div className="mt-10">
-              <SectionTitle
-                as="h1"
-                align="left"
-                title="聯絡我們"
-                desc="告訴我們您的場地與需求，專員為您提供規劃。詢問特定產品時，請提供產品頁上的型號或品項編號。"
-              />
-            </div>
-          </div>
+          {/* 左：區塊標題 */}
+          <SectionTitle align="left" title="聯絡資訊" desc="電話、E-MAIL 或 LINE 都可以，專員會盡快回覆。" />
 
           {/* 聯絡資訊表 */}
-          <dl className="border-t border-line lg:mt-16">
+          <dl className="border-t border-line">
             {rows.map((r) => (
               <div key={r.label} className="flex gap-6 border-b border-line py-4 text-sm sm:text-base">
                 <dt className="w-24 shrink-0 text-xs tracking-[0.2em] text-muted sm:pt-1">{r.label}</dt>

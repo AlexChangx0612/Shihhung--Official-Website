@@ -1,4 +1,4 @@
-// 站內搜尋索引：彙整產品系列、已登錄產品、全部商品照、服務頁與適用場域（伺服器端，會讀取產品圖片資料夾）
+// 站內搜尋索引：彙整產品系列、已登錄產品、全部商品照與服務頁（伺服器端，會讀取產品圖片資料夾）
 import { categoryContent } from "./category-content";
 // 匯入已登錄產品
 import { products } from "./product-details";
@@ -8,8 +8,6 @@ import { caseHref, cases } from "./cases";
 import { getCatalog } from "./products";
 // 匯入搜尋項目型別
 import type { SearchEntry } from "./search-match";
-// 匯入適用場域
-import { solutions } from "./solutions";
 
 // 服務與資訊頁：標題、連結、說明與額外關鍵字
 const pages: { title: string; href: string; desc: string; keywords: string }[] = [
@@ -19,7 +17,7 @@ const pages: { title: string; href: string; desc: string; keywords: string }[] =
   { title: "專員為您提供規劃", href: "/contact", desc: "提供場地尺寸，專員協助規劃動線並為您提供服務。", keywords: "聯絡 報價 詢價 估價 規劃 動線 電話 email line 地址 營業時間 免費" },
   { title: "客戶實際案例", href: "/cases", desc: "文化園區、寺廟、政府機關、門市與職業球團的實拍案例。", keywords: "案例 實績 實例 作品 應用 實拍" },
   { title: "關於世紘", href: "/about", desc: "專注公共與商業空間設備的台灣專業廠商。", keywords: "關於 公司 簡介 世紘興業 理念 物業管理" },
-  { title: "常見問題", href: "/#faq", desc: "欄柱選擇、數量估算與採購的常見問題。", keywords: "faq 問題 問答 估算 幾支" },
+  { title: "常見問題", href: "/faq", desc: "欄柱選擇、數量估算與採購的常見問題。", keywords: "faq 問題 問答 估算 幾支" },
 ];
 
 // 建立搜尋索引
@@ -58,14 +56,6 @@ export function getSearchIndex(): SearchEntry[] {
     })),
     // 服務與資訊頁
     ...pages.map((p): SearchEntry => ({ kind: "服務", title: p.title, href: p.href, desc: p.desc, text: `${p.desc} ${p.keywords}`.toLowerCase() })),
-    // 適用場域
-    ...solutions.map((s): SearchEntry => ({
-      kind: "適用場域",
-      title: s.name,
-      href: `/solutions/${s.slug}`,
-      desc: s.h1,
-      text: [s.en, s.h1, s.intro, ...s.needs.map((n) => `${n.title} ${n.desc}`)].join(" ").toLowerCase(),
-    })),
     // 客戶案例：客戶、地點、產品、客製內容與故事內文
     ...cases.map((c): SearchEntry => ({
       kind: "客戶案例",

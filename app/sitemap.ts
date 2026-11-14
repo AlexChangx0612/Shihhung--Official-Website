@@ -6,11 +6,9 @@ import { products } from "./lib/product-details";
 import { getCatalog } from "./lib/products";
 // 匯入網址工具
 import { absoluteUrl } from "./lib/site";
-// 匯入適用場域
-import { solutions } from "./lib/solutions";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // 依序：首頁、關於、產品系列、各分類、各產品、場域總覽、各場域
+  // 依序：首頁、關於、產品系列、各分類、各產品
   const paths = [
     "/",
     "/about",
@@ -18,11 +16,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/catalog",
     "/custom",
     "/advantages",
-    "/products",
+    "/faq",
     ...getCatalog().categories.map((c) => `/products/${c.slug}`),
     ...products.map((p) => `/products/${p.category}/${p.slug}`),
-    "/solutions",
-    ...solutions.map((s) => `/solutions/${s.slug}`),
   ];
   return paths.map((p) => ({ url: absoluteUrl(p) }));
 }

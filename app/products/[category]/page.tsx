@@ -22,8 +22,6 @@ import { categoryContent } from "../../lib/category-content";
 import { getCatalog, getCategory, type CatalogItem } from "../../lib/products";
 // 匯入 SEO 工具
 import { absoluteUrl, faqJsonLd, ORG_ID, pageMetadata } from "../../lib/site";
-// 匯入適用場域資料
-import { getSolution } from "../../lib/solutions";
 // 匯入共用樣式
 import { bodyText, card, cardHover, cardTitle, container, outlineBtn, pageTop, section } from "../../lib/ui";
 
@@ -96,8 +94,6 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
 
   // 網址
   const path = `/products/${cat.slug}`;
-  // 相關場域
-  const related = content.solutions.map(getSolution).filter((s) => s !== undefined);
 
   return (
     <PageShell>
@@ -122,7 +118,6 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
           <Breadcrumbs
             items={[
               { name: "首頁", path: "/" },
-              { name: "產品系列", path: "/products" },
               { name: cat.name, path },
             ]}
           />
@@ -233,24 +228,6 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
           <InfoColumn title="如何選擇適合的產品？" items={content.choose} />
         </div>
       </section>
-
-      {/* 適用場域：連到場域頁 */}
-      {related.length > 0 && (
-        <section className={section}>
-          <div className={`${container} grid gap-12 lg:grid-cols-2 lg:gap-20`}>
-            <SectionTitle align="left" title="常見的應用場域" desc="依場域查看動線規劃重點與建議設備配置。" />
-            <ol className="border-t border-line">
-              {related.map((s) => (
-                <li key={s.slug} className="border-b border-line">
-                  <Link href={`/solutions/${s.slug}`} className="flex items-baseline gap-6 py-4 transition hover:text-brand-deep">
-                    <span className="text-lg tracking-[0.1em]">{s.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      )}
 
       {/* 常見問題 */}
       <section id="faq" className={section}>

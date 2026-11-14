@@ -20,8 +20,8 @@ import MobileSidebar from "./MobileSidebar";
 // 「/」開頭為站內頁面，「/#」為首頁區塊
 // LOGO 左側四個按鈕
 const navLeft = [
-  // 產品系列 → 打開產品分類 sidebar（大螢幕）；抽屜中連到產品系列頁
-  { href: "/products", label: "產品系列" },
+  // 產品系列 → 打開產品分類下拉選單（大螢幕）；抽屜中連到首頁「產品系列」區塊
+  { href: "/#collections", label: "產品系列" },
   // 產品電子目錄 → 目錄預覽與下載頁
   { href: "/catalog", label: "產品電子目錄" },
   // 客戶實際案例 → 案例總覽頁
@@ -36,7 +36,7 @@ const navRight = [
   // 國際認證 → 優勢、專利與檢驗報告頁
   { href: "/advantages", label: "國際認證" },
   // 常見問題 → 首頁常見問題區塊
-  { href: "/#faq", label: "常見問題" },
+  { href: "/faq", label: "常見問題" },
   // 聯絡我們 → 聯絡我們頁面
   { href: "/contact", label: "聯絡我們" },
 ];
@@ -146,10 +146,11 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
         </div>
 
         {/* 主列：三欄格線（左欄、LOGO、右欄）；高度手機 80px → 平板 96px → 電腦 144px（捲動後縮為 80px） */}
-        {/* 左右欄可縮到 0（minmax），手機欄間距 8px，避免兩側按鈕被擠出畫面 */}
-        <div className={`grid h-20 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 px-2.5 transition-[height] duration-300 sm:h-24 sm:px-6 ${scrolled ? "lg:h-20" : "lg:h-36"} lg:px-8 2xl:gap-x-8 2xl:px-4 3xl:px-8`}>
+        {/* 左右欄等寬，LOGO 正中央；768px 以下放大鏡移到左欄（☰＋放大鏡 ↔ 聯絡我們），兩邊寬度相近才放得下 */}
+        {/* 360px 以下的極小螢幕連等寬都放不下，改為左右欄依內容寬度 */}
+        <div className={`grid h-20 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-0 px-2.5 min-[360px]:gap-x-1 min-[360px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-x-2 transition-[height] duration-300 sm:h-24 sm:px-6 ${scrolled ? "lg:h-20" : "lg:h-36"} lg:px-8 2xl:gap-x-8 2xl:px-4 3xl:px-8`}>
           {/* 左欄：較小螢幕靠左；大螢幕靠右（貼近 LOGO） */}
-          <div className="flex items-center gap-8 justify-self-start 2xl:justify-self-end">
+          <div className="flex items-center gap-0 justify-self-start min-[360px]:gap-1 2xl:gap-8 2xl:justify-self-end">
             {/* ☰ 選單按鈕：大螢幕隱藏 */}
             <button
               // 一般按鈕
@@ -161,18 +162,20 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
               // 告訴輔助工具抽屜目前是否展開
               aria-expanded={open}
               // 圖示與文字橫向排列，24px 字；點擊範圍至少 44×44px
-              className="flex min-h-11 min-w-11 shrink-0 items-center gap-1.5 text-[15px] tracking-[0.1em] whitespace-nowrap sm:gap-3 sm:text-xl sm:tracking-[0.15em] 2xl:hidden"
+              className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 text-[15px] tracking-[0.05em] whitespace-nowrap sm:justify-start sm:gap-3 sm:text-xl sm:tracking-[0.15em] 2xl:hidden"
             >
               {/* 兩條橫線的選單圖示：手機 20px 寬，平板以上 30px */}
               <svg viewBox="0 0 20 10" aria-hidden="true" className="h-2.5 w-5 sm:h-[15px] sm:w-[30px]">
                 {/* 上下兩條線 */}
                 <path d="M0 1h20M0 9h20" stroke="currentColor" strokeWidth="1.2" />
               </svg>
-              {/* 「選單」文字 */}
-              <span>選單</span>
+              {/* 「選單」文字：手機只留圖示，讓出空間給完整的「聯絡我們」（按鈕仍有 aria-label） */}
+              <span className="hidden sm:inline">選單</span>
             </button>
             {/* 左側四個按鈕（大螢幕才顯示）：滑動底色；「產品系列」為下拉選單 */}
             <MotionNavList items={navLeft} categories={categories} linkClassName={navLink} className={navGroup} />
+            {/* 放大鏡（768px 以下）：放在選單旁，讓左右欄寬度相近、LOGO 能正中央 */}
+            <SiteSearch className="md:hidden" />
           </div>
 
           {/* 品牌：Shung 標誌 ｜ 公司名稱與標語 */}
@@ -190,35 +193,33 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
               height={139}
               // 立即載入（第一眼就看得到）
               loading="eager"
-              // 高度：手機 28px → 平板 48px → 電腦 56px，寬度等比例
-              className="h-7 w-auto sm:h-12 lg:h-14"
+              // 高度：375px 以下 24px → 手機 28px → 平板 48px → 電腦 56px，寬度等比例
+              className="h-6 w-auto min-[375px]:h-7 sm:h-12 lg:h-14"
             />
             {/* LOGO 與文字之間的紅色直線 */}
-            <span aria-hidden="true" className="h-7 w-px bg-brand/40 sm:h-11 lg:h-12" />
+            <span aria-hidden="true" className="h-6 w-px bg-brand/40 min-[375px]:h-7 sm:h-11 lg:h-12" />
             {/* 公司名稱與標語（不換行） */}
             <span className="leading-none whitespace-nowrap">
               {/* 公司名稱：深品牌紅，手機 15px → 平板 28px → 電腦 34px */}
               <span className="block text-[15px] tracking-[0.15em] text-brand-deep sm:text-2xl sm:tracking-[0.3em] lg:text-3xl">世紘興業</span>
-              {/* 標語：灰字，手機 9px → 平板 14px → 電腦 16px */}
-              <span className="mt-1.5 block text-[9px] tracking-[0.08em] text-muted sm:mt-2 sm:text-xs sm:tracking-[0.28em] lg:text-sm">公共空間設備專家</span>
+              {/* 標語：灰字，手機 9px → 平板 14px → 電腦 16px；375px 以下的小螢幕空間不足，隱藏 */}
+              <span className="mt-1.5 hidden text-[9px] min-[375px]:block tracking-[0.08em] text-muted sm:mt-2 sm:text-xs sm:tracking-[0.28em] lg:text-sm">公共空間設備專家</span>
             </span>
           </Link>
 
           {/* 右欄：較小螢幕靠右；大螢幕靠左（貼近 LOGO）；最右側為放大鏡 */}
           <div className="flex items-center justify-self-end sm:gap-3 2xl:justify-self-start 2xl:gap-5 3xl:gap-8">
             {/* 「聯絡我們」→ 聯絡我們頁面（較小螢幕；手機 15px 字，平板以上 24px） */}
-            {/* 手機右側另有放大鏡，空間不足，只顯示「聯絡」 */}
             <Link
               href="/contact"
-              aria-label="聯絡我們"
-              className="flex min-h-11 items-center text-[15px] tracking-[0.1em] whitespace-nowrap transition hover:text-brand-deep sm:text-xl sm:tracking-[0.15em] 2xl:hidden"
+              className="flex min-h-11 items-center text-[15px] tracking-[0.05em] whitespace-nowrap transition hover:text-brand-deep sm:text-xl sm:tracking-[0.15em] 2xl:hidden"
             >
-              聯絡<span className="hidden sm:inline">我們</span>
+              聯絡我們
             </Link>
             {/* 右側四個按鈕（大螢幕才顯示）：滑鼠移過時淡紅底色以彈簧動態滑動 */}
             <MotionNavList items={navRight} linkClassName={navLink} className={navGroup} />
-            {/* 放大鏡：站內搜尋（所有尺寸都顯示，位於最右側） */}
-            <SiteSearch />
+            {/* 放大鏡（768px 以上）：站內搜尋，位於最右側 */}
+            <SiteSearch className="max-md:hidden" />
           </div>
         </div>
       </header>

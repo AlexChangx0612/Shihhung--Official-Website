@@ -35,7 +35,8 @@ export default function CustomIndex() {
   const related = o.cases.map((s) => cases.find((c) => c.slug === s)).filter((c) => c !== undefined);
 
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+    // 手機單欄用 grid-cols-1（minmax(0,1fr)），避免橫向滑動的產品按鈕列把欄寬撐到超出畫面
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
       {/* 左：產品清單。手機為一排橫向滑動按鈕，電腦為分組直列 */}
       <nav aria-label="可客製的產品" className="lg:col-span-4">
         {/* 手機與平板 */}

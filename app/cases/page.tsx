@@ -2,8 +2,8 @@
 import type { Metadata } from "next";
 // 匯入 Next.js 站內連結元件
 import Link from "next/link";
-// 匯入麵包屑
-import Breadcrumbs from "../components/Breadcrumbs";
+// 匯入滿版照片頁首
+import { PhotoHero } from "../components/AboutBlocks";
 // 匯入固定大圖舞台
 import CaseStage from "../components/CaseStage";
 // 匯入內頁外框
@@ -13,7 +13,7 @@ import { cases } from "../lib/cases";
 // 匯入 SEO 工具
 import { pageMetadata } from "../lib/site";
 // 匯入共用樣式
-import { container, outlineBtn, pageTop } from "../lib/ui";
+import { container, outlineBtn } from "../lib/ui";
 
 // 中繼資料
 // CMS 完成、網站正式上線前先不讓搜尋引擎收錄、也不列入 sitemap；上線時移除 robots 這一行，並把 /cases 與各案例頁加進 app/sitemap.ts
@@ -30,15 +30,17 @@ export const metadata: Metadata = {
 export default function CasesPage() {
   return (
     <PageShell>
-      <section className={`${pageTop} pb-24 sm:pb-32`}>
-        {/* 頁首：麵包屑、靠左大標、一句說明 */}
-        <div className={container}>
-          <Breadcrumbs items={[{ name: "首頁", path: "/" }, { name: "客戶實際案例", path: "/cases" }]} />
-          <h1 className="mt-10 max-w-[13em] text-[clamp(38px,5.4vw,80px)] leading-[1.12] font-black text-balance">走進各種場域，都能看見世紘的產品</h1>
-          <p className="mt-8 max-w-[30em] text-[clamp(18px,1.4vw,21px)] leading-[1.8] text-muted">
-            從文化園區、寺廟、政府機關到門市與職業球團。往下捲動，一個一個走進世紘的欄柱與拒馬站著的地方。
-          </p>
-        </div>
+      {/* 頁首：滿版照片橫幅（與關於世紘同一個元件） */}
+      <PhotoHero
+        crumbs={[{ name: "首頁", path: "/" }, { name: "客戶實際案例", path: "/cases" }]}
+        eyebrow="Our Cases"
+        title="客戶實際案例"
+        subtitle="走進各種場域，都能看見世紘的產品。從文化園區、寺廟、政府機關到門市與職業球團，往下捲動，一個一個走進世紘的欄柱與拒馬站著的地方。"
+        // AI 生成圖：暗色展廳裡，一排鍍鉻伸縮帶欄柱以紅色織帶圍出動線；主體在右，左側留黑給文字
+        image={{ src: "/cases/cases-hero.png", alt: "傍晚的美術館挑高中庭，暖色燈光灑在石材樓梯與大廳動線上", position: "80% 50%" }}
+      />
+
+      <section className="pb-24 sm:pb-32">
 
         {/* 案例：電腦版左側固定大圖、右側捲動清單 */}
         <CaseStage cases={cases} />

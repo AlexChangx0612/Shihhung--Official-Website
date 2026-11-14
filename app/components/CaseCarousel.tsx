@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 // 匯入案例資料型別與案例頁網址
 import { caseHref, type CaseStudy } from "../lib/cases";
+// 匯入首頁輪播挑選的照片
+import { getShowcase } from "../lib/case-stage";
 
 // 按下到放開移動不超過這個距離（像素）就當作點擊，而不是拖曳
 const TAP = 6;
@@ -405,7 +407,9 @@ export default function CaseCarousel({ cases }: { cases: CaseStudy[] }) {
           className="relative h-[calc(50cqw_+_110px)] cursor-grab touch-pan-y overflow-hidden select-none focus-visible:outline-offset-[-4px] data-dragging:cursor-grabbing min-[821px]:h-[calc(29.167cqw_+_110px)]"
         >
           {/* 每張卡片＋說明 */}
-          {items.map(({ c, dup }, i) => (
+          {items.map(({ c, dup }, i) => {
+            const shot = getShowcase(c);
+            return (
             <div key={i} aria-hidden={dup || undefined}>
               {/* 卡片：位置、尺寸、裁切由程式逐格設定；載入前先隱藏 */}
               <div
@@ -417,15 +421,20 @@ export default function CaseCarousel({ cases }: { cases: CaseStudy[] }) {
                 // 預設與輪播帶同尺寸（畫面外的卡片不會被程式設定尺寸，避免圖片以 0 高度載入）
                 className="invisible absolute top-0 left-0 size-full cursor-pointer overflow-hidden bg-white will-change-transform"
               >
-                {/* 案例封面照：等比例填滿 */}
+                {/* 案例照片（lib/case-stage.ts 挑選）：等比例填滿 */}
                 <Image
-                  src={c.cover.src}
-                  alt={dup ? "" : c.cover.alt}
+                  src={shot.src}
+                  alt={dup ? "" : shot.alt}
                   fill
                   draggable={false}
                   sizes="(max-width: 820px) 85vw, 45vw"
                   className="pointer-events-none object-cover"
+                  style={{ objectPosition: shot.pos }}
                 />
+                {/* 開放授權照片的署名（CC 授權規定必須標示） */}
+                {shot.credit && (
+                  <span className="pointer-events-none absolute bottom-0 left-0 bg-black/45 px-2 py-1 text-[10px] text-white/85 sm:text-xs">{shot.credit.text}</span>
+                )}
               </div>
               {/* 卡片下方說明：案例名稱＋場域；點擊同樣進入案例頁 */}
               <div
@@ -439,7 +448,8 @@ export default function CaseCarousel({ cases }: { cases: CaseStudy[] }) {
                 <p className="truncate text-xs text-muted sm:text-sm">{c.scene}</p>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
         {/* 給螢幕閱讀器與鍵盤的案例連結清單：輪播卡片只能用滑鼠或觸控點，這裡提供真正的連結；平常隱藏，用 Tab 聚焦時才在畫面下方顯示 */}
         <ul>

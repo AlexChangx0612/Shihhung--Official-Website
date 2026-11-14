@@ -47,10 +47,10 @@ const picks: Record<string, CaseStage> = {
     ],
   },
   "lienchiang-meishi-arts-center": {
-    hero: { src: "/cases/lienchiang-meishi-arts-center/01.jpg", alt: "印有「馬祖梅石藝文中心」的黑色織帶", pos: "50% 40%" },
+    hero: { src: "/cases/lienchiang-meishi-arts-center/venue.jpg", alt: "馬祖梅石藝文中心外觀與入口廣場", pos: "45% 50%" },
     side: [
+      { src: "/cases/lienchiang-meishi-arts-center/01.jpg", alt: "印有「馬祖梅石藝文中心」的黑色織帶", pos: "50% 40%" },
       { src: "/cases/lienchiang-meishi-arts-center/03.jpg", alt: "裝箱中的黑色伸縮帶欄柱與配件" },
-      { src: "/cases/lienchiang-meishi-arts-center/06.jpg", alt: "以堆高機將棧板貨物裝上貨車" },
     ],
   },
   "xiaomi-store": {
@@ -88,4 +88,18 @@ const picks: Record<string, CaseStage> = {
 // 取得案例的照片組（沒有挑選時退回封面與故事照片）
 export function getStage(c: CaseStudy): CaseStage {
   return picks[c.slug] ?? { hero: c.cover, side: [c.story[1].photo, c.story[2].photo] };
+}
+
+// 首頁「客戶實際案例」輪播的照片（16:9 卡片）：逐案挑場景感最好的一張；沒有挑選時用封面
+const showcase: Record<string, StagePhoto> = {
+  "chihai-cultural-park": { src: "/cases/chihai-cultural-park/01-sign.jpg", alt: "經國七海文化園區入口的園區名稱石碑", pos: "50% 55%" },
+  "tainan-tiantan-temple": picks["tainan-tiantan-temple"].hero,
+  "kham-art-ntsec": { src: "/cases/kham-art-ntsec/07.jpg", alt: "樂高野牛展品與黑色欄柱", pos: "50% 55%" },
+  "tsg-hawks": picks["tsg-hawks"].hero,
+  "barrier-printing-portfolio": { src: "/cases/barrier-printing-portfolio/15.jpg", alt: "印有柏昶新世界標誌的黑色拒馬" },
+};
+
+// 取得案例的首頁輪播照片
+export function getShowcase(c: CaseStudy): StagePhoto {
+  return showcase[c.slug] ?? c.cover;
 }

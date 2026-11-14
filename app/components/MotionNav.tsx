@@ -44,7 +44,7 @@ function Highlight({ box, instant, pad, className }: { box: Box | null; instant:
 }
 
 // 主選單一組按鈕（logo 左側或右側）：滑鼠移過時，淡紅底色在按鈕間滑動
-// items 的 href 為 "/products" 時，改成「產品系列」下拉選單
+// items 的 href 為 "/#collections" 時，改成「產品系列」下拉選單
 export function MotionNavList({
   items,
   categories,
@@ -62,7 +62,7 @@ export function MotionNavList({
       {/* 滑動底色：淡紅圓角，比文字左右多 10px、上下多 2px */}
       <Highlight {...hl} pad={[10, 2]} className="rounded-lg bg-brand/10" />
       {items.map((p) =>
-        p.href === "/products" && categories ? (
+        p.href === "/#collections" && categories ? (
           <ProductsMenu key={p.href} label={p.label} categories={categories} className={linkClassName} onHover={hl.enter} />
         ) : (
           <Link key={p.href} href={p.href} className={`relative ${linkClassName}`} onMouseEnter={(e) => hl.enter(e.currentTarget)} onFocus={(e) => hl.enter(e.currentTarget)}>
@@ -189,16 +189,6 @@ function ProductsMenu({
               </li>
             ))}
           </ul>
-          {/* 底部：全部產品系列與電子目錄 */}
-          <div className="mt-2 flex items-center justify-between border-t border-line px-4 pt-3 pb-1 text-sm tracking-[0.12em]">
-            <Link href="/products" onClick={() => setOpen(false)} className="group inline-flex items-center gap-2 text-brand-deep">
-              查看全部產品系列
-              <span aria-hidden="true" className="transition group-hover:translate-x-1">→</span>
-            </Link>
-            <Link href="/catalog" onClick={() => setOpen(false)} className="text-muted transition hover:text-brand-deep">
-              產品電子目錄
-            </Link>
-          </div>
         </div>
       </div>
     </>

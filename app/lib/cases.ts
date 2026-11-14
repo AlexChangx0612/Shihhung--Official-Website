@@ -219,7 +219,7 @@ export const cases: CaseStudy[] = [
     products: "黑色伸縮帶欄柱",
     custom: "黑色織帶彩色印刷場館名稱與標誌",
     summary: "黑色欄柱搭配彩色印刷織帶，從台灣本島裝箱出貨到馬祖。",
-    cover: photo("lienchiang-meishi-arts-center", "06", "以堆高機將棧板貨物裝上貨車"),
+    cover: photo("lienchiang-meishi-arts-center", "venue", "馬祖梅石藝文中心外觀與入口廣場"),
     story: [
       {
         ...NEEDS,
@@ -240,6 +240,7 @@ export const cases: CaseStudy[] = [
     gallery: [
       photo("lienchiang-meishi-arts-center", "04", "以收縮膜加固的棧板貨物"),
       photo("lienchiang-meishi-arts-center", "05", "準備裝車的棧板貨物"),
+      photo("lienchiang-meishi-arts-center", "06", "以堆高機將棧板貨物裝上貨車"),
     ],
     related: ["retractable-belt-stanchions"],
   },

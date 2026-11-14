@@ -1,7 +1,5 @@
 // 匯入 Next.js 網頁中繼資料型別
 import type { Metadata } from "next";
-// 匯入 Next.js 站內連結元件
-import Link from "next/link";
 // 匯入客戶實際案例弧形輪播
 import CaseCarousel from "./components/CaseCarousel";
 // 匯入「產品系列」標題區（新品聚光燈）
@@ -31,17 +29,10 @@ import { homeFaqs } from "./lib/faq";
 // 匯入 SEO 工具
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, ORG_ID, organizationJsonLd, pageMetadata, SITE_URL } from "./lib/site";
 // 匯入共用樣式
-import { container, outlineBtn, wide } from "./lib/ui";
+import { container, wide } from "./lib/ui";
 
 // 首頁標題、描述與 canonical
 export const metadata: Metadata = pageMetadata({ title: HOME_TITLE, description: HOME_DESCRIPTION, path: "/" });
-
-// 「關於世紘」區塊的延伸閱讀連結
-const more = [
-  { href: "/advantages", label: "國際認證", desc: "多國專利與第三方檢驗" },
-  { href: "/custom", label: "客製化服務", desc: "置入企業識別" },
-  { href: "/catalog", label: "產品電子目錄", desc: "線上瀏覽與 PDF 下載" },
-];
 
 // 首頁
 export default function Home() {
@@ -99,39 +90,6 @@ export default function Home() {
 
         {/* 聯絡 */}
         <ContactSection />
-
-        {/* 關於世紘：公司簡介（上方有分隔線）；手機上下排列，電腦左標題右文字 */}
-        <section id="about" className="scroll-mt-20 sm:scroll-mt-24 border-t border-line py-20 sm:py-28">
-          <div className={`${container} grid gap-10 lg:grid-cols-2 lg:gap-20`}>
-            {/* 靠左的區塊標題 */}
-            <SectionTitle align="left" title="專注公共與商業空間設備的台灣專業廠商" />
-            {/* 簡介與連結 */}
-            <div>
-              <p className="text-sm leading-8 text-pretty text-muted sm:text-base sm:leading-8">
-                世紘興業有限公司成立於 2015 年，專注於公共與商業空間周邊設備的研製與供應，產品涵蓋紅龍柱、伸縮帶欄柱、展示設備、告示牌、公共清潔設備、垃圾桶、工作推車及物業管理相關設備。世紘整合相關產業資源，以「創新、品質、誠信」為核心理念，服務企業、政府機關、學校、商場、飯店、交通場站及各類公共空間。
-              </p>
-              {/* 延伸閱讀：清單，上下淡紅分隔線；每列連到對應頁面 */}
-              <ul className="mt-10 border-t border-line">
-                {more.map((m) => (
-                  <li key={m.href} className="border-b border-line">
-                    <Link href={m.href} className="group flex items-baseline gap-6 py-4 transition hover:text-brand-deep">
-                      {/* 頁面名稱 */}
-                      <span className="text-lg tracking-[0.1em]">{m.label}</span>
-                      {/* 說明：灰字，手機隱藏 */}
-                      <span className="hidden text-sm text-muted sm:inline">{m.desc}</span>
-                      {/* 箭頭：靠右，滑鼠移上右移 */}
-                      <span aria-hidden="true" className="ml-auto text-brand-deep transition group-hover:translate-x-1">→</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              {/* 紅框按鈕：連到關於世紘頁 */}
-              <Link href="/about" className={`${outlineBtn} mt-10`}>
-                了解世紘興業
-              </Link>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* 頁尾 */}

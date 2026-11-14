@@ -104,7 +104,7 @@ const serviceLinks: NavLink[] = [
 const exploreLinks: NavLink[] = [
   { href: "/about", zh: "關於世紘", en: "About Us" },
   { href: "/advantages", zh: "國際認證", en: "Certifications" },
-  { href: "/#faq", zh: "常見問題", en: "FAQ" },
+  { href: "/faq", zh: "常見問題", en: "FAQ" },
   { href: "/contact", zh: "聯絡我們", en: "Contact Us" },
 ];
 

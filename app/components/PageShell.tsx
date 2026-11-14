@@ -9,7 +9,8 @@ import SiteHeader from "./SiteHeader";
 
 // 內頁外框：頁首＋主要內容＋聯絡區＋頁尾（與首頁相同的底色與文字顏色）
 // footerBarOnly：頁尾只留最底部的版權列（聯絡我們頁內容已列出完整聯絡資訊，不再重複）
-export default function PageShell({ children, footerBarOnly = false }: { children: React.ReactNode; footerBarOnly?: boolean }) {
+// hideContact：不顯示底部紅色聯絡區（聯絡我們頁已列出完整聯絡資訊）
+export default function PageShell({ children, footerBarOnly = false, hideContact = false }: { children: React.ReactNode; footerBarOnly?: boolean; hideContact?: boolean }) {
   // 頁首抽屜需要的分類連結
   const links = getCatalog().categories.map(({ id, slug, name }) => ({ id, slug, name }));
   return (
@@ -17,8 +18,8 @@ export default function PageShell({ children, footerBarOnly = false }: { childre
       <SiteHeader categories={links} />
       <main>
         {children}
-        {/* 每一頁底部都提供詢價方式 */}
-        <ContactSection />
+        {/* 每一頁底部都提供詢價方式（聯絡我們頁除外） */}
+        {!hideContact && <ContactSection />}
       </main>
       <SiteFooter barOnly={footerBarOnly} />
     </div>

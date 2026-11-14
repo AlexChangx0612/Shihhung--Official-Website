@@ -20,8 +20,6 @@ export type CategoryContent = {
   choose: string[];
   // 常見問題
   faqs: Faq[];
-  // 相關的適用場域（/solutions/<slug>）
-  solutions: string[];
 };
 
 // 詢價導引（未確認的規格一律使用這句）
@@ -75,7 +73,6 @@ export const categoryContent: Record<string, CategoryContent> = {
         a: "每一段直線所需支數約為「直線長度 ÷ 織帶長度」再加 1，每多一個轉折點多 1 支。例如一條 12 公尺的直線，使用 4 米織帶約需 4 支。實際擺放時織帶不建議完全拉滿，可預留一些餘裕；提供場地尺寸，專員可為您提供規劃。",
       },
     ],
-    solutions: ["bank-post-office", "hospital-clinic", "airport-station", "shopping-mall"],
   },
 
   // 迎賓欄柱
@@ -100,7 +97,6 @@ export const categoryContent: Record<string, CategoryContent> = {
       },
       { q: "迎賓欄柱的絨布繩可以選顏色嗎？", a: `可依空間風格挑選絨布繩，${ASK}` },
     ],
-    solutions: ["hotel-restaurant", "exhibition-event", "shopping-mall"],
   },
 
   // 展覽佈展欄柱
@@ -123,7 +119,6 @@ export const categoryContent: Record<string, CategoryContent> = {
         link: { href: "/products/plastic-stanchions", label: "了解塑膠欄柱" },
       },
     ],
-    solutions: ["exhibition-event", "airport-station"],
   },
 
   // 塑膠欄柱
@@ -144,7 +139,6 @@ export const categoryContent: Record<string, CategoryContent> = {
         a: "塑膠欄柱常用於施工區與停車場等戶外場合。若需長期放置或有特殊需求，請向專員說明使用環境。",
       },
     ],
-    solutions: ["shopping-mall", "exhibition-event"],
   },
 
   // 拒馬
@@ -165,7 +159,6 @@ export const categoryContent: Record<string, CategoryContent> = {
         a: "可以。世紘的拒馬可放置廣告看板，並可置入貴公司的品牌視覺，請提供內容與數量洽詢。",
       },
     ],
-    solutions: ["bank-post-office", "exhibition-event"],
   },
 
   // 海報架・告示牌
@@ -187,7 +180,6 @@ export const categoryContent: Record<string, CategoryContent> = {
         a: "可以。告示牌與海報架皆可置入貴公司的品牌視覺，請提供內容、尺寸與數量洽詢。",
       },
     ],
-    solutions: ["hospital-clinic", "shopping-mall", "hotel-restaurant"],
   },
 
   // 佈告欄
@@ -202,7 +194,6 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "佈告欄可以移動嗎？", a: "世紘的佈告欄附輪，可依需求移動到不同區域使用。" },
     ],
-    solutions: ["exhibition-event", "hospital-clinic"],
   },
 
   // 數位看板・燈箱
@@ -217,7 +208,6 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "數位看板需要怎麼更換內容？", a: `內容更換方式依型號而異，${ASK}` },
     ],
-    solutions: ["shopping-mall", "hotel-restaurant", "exhibition-event"],
   },
 
   // 垃圾桶・資源回收
@@ -236,7 +226,6 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "分類回收桶可以標示回收類別嗎？", a: "可以搭配分類貼紙標示回收類別，類別組合請洽專員確認。" },
     ],
-    solutions: ["hospital-clinic", "shopping-mall", "airport-station"],
   },
 
   // 清潔衛生
@@ -251,7 +240,6 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "感應給皂機適合哪些地方？", a: "適合醫院、診所、辦公大樓、飯店與商場等人流量大、重視衛生的洗手區。" },
     ],
-    solutions: ["hospital-clinic", "hotel-restaurant"],
   },
 
   // 傘架・傘桶
@@ -266,7 +254,6 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "傘架可以收起來嗎？", a: "世紘的鋁合金摺疊傘架不用時可收合，節省入口空間。" },
     ],
-    solutions: ["bank-post-office", "hospital-clinic", "hotel-restaurant"],
   },
 
   // 推車・工具車
@@ -281,7 +268,6 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "推車的載重是多少？", a: `載重依型號而異，${ASK}` },
     ],
-    solutions: ["hotel-restaurant"],
   },
 
   // 鑰匙箱
@@ -296,6 +282,5 @@ export const categoryContent: Record<string, CategoryContent> = {
     faqs: [
       { q: "鑰匙箱有哪些容量？", a: "世紘鑰匙箱提供 20～240 支容量，可依需要管理的鑰匙數量選擇。" },
     ],
-    solutions: ["hotel-restaurant"],
   },
 };

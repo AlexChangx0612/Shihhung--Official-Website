@@ -99,9 +99,9 @@ export default function CaseStage({ cases }: { cases: CaseStudy[] }) {
               data-i={i}
               className="flex flex-col justify-center py-14 first:pt-0 lg:min-h-[85svh] lg:py-0 lg:first:pt-0"
             >
-              {/* 手機與平板：每個案例自帶照片 */}
+              {/* 手機與平板：每個案例自帶照片（電腦版隱藏，sizes 設 1px 讓電腦版只下載最小縮圖） */}
               <div className="relative mb-8 aspect-[4/5] overflow-hidden sm:aspect-[4/3] lg:hidden">
-                <Image src={stage.hero.src} alt={stage.hero.alt} fill sizes="100vw" style={{ objectPosition: stage.hero.pos }} className={`object-cover ${s.tone}`} />
+                <Image src={stage.hero.src} alt={stage.hero.alt} fill sizes="(min-width: 1024px) 1px, 100vw" style={{ objectPosition: stage.hero.pos }} className={`object-cover ${s.tone}`} />
                 {stage.hero.credit && (
                   <a href={stage.hero.credit.href} target="_blank" rel="noopener noreferrer" className="absolute top-0 left-0 bg-black/45 px-3 py-1.5 text-xs text-white/85">
                     {stage.hero.credit.text}

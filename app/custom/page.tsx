@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import BeltWall from "../components/BeltWall";
 // 匯入數字滾動
 import CountUp from "../components/CountUp";
-// 匯入麵包屑
-import Breadcrumbs from "../components/Breadcrumbs";
+// 匯入滿版照片頁首
+import { PhotoHero } from "../components/AboutBlocks";
 // 匯入常見問題清單
 import FaqList, { type Faq } from "../components/FaqList";
 // 匯入結構化資料元件
@@ -21,7 +21,7 @@ import { customOptions } from "../lib/custom-options";
 // 匯入 SEO 工具
 import { absoluteUrl, faqJsonLd, pageMetadata } from "../lib/site";
 // 匯入共用樣式
-import { container, pageTop, solidBtn } from "../lib/ui";
+import { container, solidBtn } from "../lib/ui";
 
 // 頁面描述
 const description =
@@ -50,8 +50,8 @@ const steps: Step[] = [
   },
   {
     title: "專員規劃",
-    desc: "專員依場地規劃品項與動線，確認客製內容、可行性與交期。",
-    details: ["依場地動線建議品項與擺放", "確認顏色、文字與標誌位置", "確認可行性、數量與交期"],
+    desc: "專員確認客製內容、可行性與交期。",
+    details: ["確認顏色、文字與標誌位置", "確認可行性、數量與交期"],
     section: "規劃",
     fields: [
       { label: "織帶顏色", value: "品牌紅", kind: "swatch", color: "#d61f2a" },
@@ -111,11 +111,16 @@ export default function CustomPage() {
       <JsonLd data={[{ "@type": "WebPage", name: "客製化服務", description, url: absoluteUrl("/custom") }, faqJsonLd(faqs)]} />
 
       {/* ① 開場：標題、一句說明、產品捷徑（點了跳到總覽並選好該產品） */}
-      <section className={`${pageTop} ${container}`}>
-        <Breadcrumbs items={[{ name: "首頁", path: "/" }, { name: "客製化服務", path: "/custom" }]} />
-        <h1 className="mt-10 text-[clamp(44px,6vw,96px)] leading-[1.05] font-black">客製化服務</h1>
-        <p className="mt-6 text-[clamp(18px,1.5vw,22px)] leading-[1.7]">{customOptions.length} 類產品，都能印上您的標誌與顏色。</p>
-        <p className="mt-12 text-sm text-muted">我想客製的是：</p>
+      <PhotoHero
+        crumbs={[{ name: "首頁", path: "/" }, { name: "客製化服務", path: "/custom" }]}
+        eyebrow="Customization"
+        title="客製化服務"
+        subtitle={`${customOptions.length} 類產品，都能印上您的標誌與顏色。`}
+        // AI 生成圖：UV 印表機正把標誌印上紅色拒馬看板，後方是同款客製的欄柱與拒馬；主體在右，左側留黑給文字
+        image={{ src: "/custom/custom-hero.png", alt: "UV 印表機正把標誌印上紅色拒馬看板，後方是印上同一標誌的伸縮帶欄柱與拒馬", position: "70% 42%" }}
+      />
+      <section className={`${container} pt-16 lg:pt-24`}>
+        <p className="text-sm text-muted">我想客製的是：</p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {customOptions.map((o) => (
             <li key={o.slug}>
