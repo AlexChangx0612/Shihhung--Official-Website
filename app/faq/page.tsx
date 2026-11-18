@@ -37,8 +37,10 @@ export default function FaqPage() {
         crumbs={[{ name: "首頁", path: "/" }, { name: "常見問題", path: "/faq" }]}
         eyebrow="FAQ"
         title="常見問題"
-        subtitle="關於欄柱選擇、數量估算與採購的常見問題。找不到答案時，歡迎直接聯絡專員。"
-        image={{ src: "/faq/faq-hero.png", alt: "專員在會議桌前指著場地平面圖，與客戶討論規劃", position: "88% 50%" }}
+        // 副標分兩行，讓文字停在照片左側的窗景，不壓到右邊的盆栽與欄柱
+        subtitle={<>關於欄柱選擇、數量估算與採購的常見問題。<br className="max-sm:hidden" />找不到答案時，歡迎直接聯絡專員。</>}
+        // 對齊左邊：畫面變窄時從右邊裁，產品不會被推到文字底下；手機改上圖下文，照片靠右露出產品
+        image={{ src: "/faq/faq-hero-v2.png", alt: "高樓層展示洽談室，石材會議桌上放著型錄、場地平面圖與織帶色樣，後方整齊陳列伸縮帶欄柱、展覽欄柱與數位看板", position: "0% 50%", mobilePosition: "100% 50%" }}
       />
 
       {/* 問答清單 */}
