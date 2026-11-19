@@ -30,45 +30,33 @@ export function PhotoHero({
   // 玻璃按鈕連結（沒給就不顯示按鈕）
   link?: { href: string; label: string };
   // 背景照片；position 為裁切對齊位置（object-position）
-  // mobilePosition：有給時，手機版改成「上圖下文」（照片在上、文字在下方深色區），照片用這個對齊位置
+  // mobilePosition：手機版（< sm）另用的裁切對齊位置，版型不變，只換照片露出的部分
   image: { src: string; alt: string; position?: string; mobilePosition?: string };
 }) {
-  // 手機版是否改成上圖下文
-  const stacked = Boolean(image.mobilePosition);
-  const photo = (
-    <Image
-      src={image.src}
-      alt={image.alt}
-      fill
-      preload
-      sizes="100vw"
-      className={`-z-10 object-cover ${stacked ? "[object-position:var(--pos-m)] sm:[object-position:var(--pos)]" : ""}`}
-      style={
-        stacked
-          ? ({ "--pos-m": image.mobilePosition, "--pos": image.position ?? "50% 50%" } as React.CSSProperties)
-          : { objectPosition: image.position }
-      }
-    />
-  );
+  const hasMobilePos = Boolean(image.mobilePosition);
   return (
     <section className="px-2 pt-24 sm:px-6 sm:pt-28 lg:px-10 lg:pt-44">
-      <div
-        className={`relative isolate flex overflow-hidden rounded-[18px] bg-ink text-white lg:min-h-[600px] lg:rounded-[22px] ${
-          stacked ? "flex-col sm:min-h-[520px] sm:flex-row sm:items-center" : "min-h-[520px] items-center"
-        }`}
-      >
-        {/* 背景照片（上圖下文時，手機上是一塊 16:9 的照片區） */}
-        {stacked ? (
-          <div className="relative aspect-video w-full sm:absolute sm:inset-0 sm:-z-10 sm:aspect-auto">{photo}</div>
-        ) : (
-          photo
-        )}
-        {/* 深色漸層：左邊深、右邊透，讓白字清楚（上圖下文時手機不需要） */}
+      <div className="relative isolate flex min-h-[520px] items-center overflow-hidden rounded-[18px] bg-ink text-white lg:min-h-[600px] lg:rounded-[22px]">
+        {/* 背景照片 */}
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          preload
+          sizes="100vw"
+          className={`-z-10 object-cover ${hasMobilePos ? "[object-position:var(--pos-m)] sm:[object-position:var(--pos)]" : ""}`}
+          style={
+            hasMobilePos
+              ? ({ "--pos-m": image.mobilePosition, "--pos": image.position ?? "50% 50%" } as React.CSSProperties)
+              : { objectPosition: image.position }
+          }
+        />
+        {/* 深色漸層：左邊深、右邊透，讓白字清楚 */}
         <div
           aria-hidden="true"
-          className={`absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/45 to-black/10 ${stacked ? "max-sm:hidden" : ""}`}
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/45 to-black/10"
         />
-        <div className={`${container} ${stacked ? "py-10 sm:py-16" : "py-16"}`}>
+        <div className={`${container} py-16`}>
           {/* 麵包屑：改成白字 */}
           <div className="[&_[aria-current]]:text-white [&_a:hover]:text-white [&_ol]:text-white/70">
             <Breadcrumbs items={crumbs} />

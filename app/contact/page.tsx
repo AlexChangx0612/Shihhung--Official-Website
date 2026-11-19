@@ -52,8 +52,8 @@ export default function ContactPage() {
         title="聯絡我們"
         // 副標分兩行，讓文字停在照片左側的白牆，不壓到右邊的欄柱與櫃台
         subtitle={<>告訴我們您的場地與需求，專員為您提供規劃。<br className="max-sm:hidden" />詢問特定產品時，請提供產品頁上的型號或品項編號。</>}
-        // 對齊左邊：畫面變窄時從右邊裁，產品不會被推到文字底下；手機改上圖下文，照片靠右露出產品
-        image={{ src: "/contact/contact-hero-v2.png", alt: "辦公大樓一樓服務櫃台前，紅色織帶伸縮欄柱排出排隊動線，入口旁擺放數位看板、傘架與感應給皂機", position: "0% 50%", mobilePosition: "100% 50%" }}
+        // 對齊左邊：畫面變窄時從右邊裁，產品不會被推到文字底下；手機改靠右，讓欄柱與櫃台當底圖
+        image={{ src: "/contact/contact-hero-v2.png", alt: "辦公大樓一樓服務櫃台前，紅色織帶伸縮欄柱排出排隊動線，入口旁擺放數位看板、傘架與感應給皂機", position: "0% 50%", mobilePosition: "65% 50%" }}
       />
 
       <section className="pt-16 pb-20 sm:pb-28 lg:pt-24">
