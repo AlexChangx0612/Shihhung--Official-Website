@@ -124,6 +124,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[cate
           <Breadcrumbs
             items={[
               { name: "首頁", path: "/" },
+              { name: "產品系列", path: "/products" },
               { name: list.name, path: list.listHref },
               { name: item.model, path: item.href },
             ]}

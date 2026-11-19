@@ -11,6 +11,7 @@ import type { SearchEntry } from "./search-match";
 
 // 服務與資訊頁：標題、連結、說明與額外關鍵字
 const pages: { title: string; href: string; desc: string; keywords: string }[] = [
+  { title: "產品系列", href: "/products", desc: "全系列產品目錄，依系列瀏覽所有產品。", keywords: "產品 全部 目錄 系列 商品 產品牆" },
   { title: "客製化服務", href: "/custom", desc: "欄柱、拒馬、告示牌與海報架置入企業識別，企業禮贈品。", keywords: "客製 訂製 logo 企業識別 印製 禮贈品 贈品 柱頭告示框 拒馬看板" },
   { title: "產品電子目錄", href: "/catalog", desc: "線上瀏覽與 PDF 下載。", keywords: "目錄 型錄 catalog pdf 下載 dm" },
   { title: "國際認證", href: "/advantages", desc: "多國專利、SGS 檢驗與台灣製造。", keywords: "優勢 專利 證書 認證 sgs reach 檢驗 報告 鹽霧 台灣製造 mit 品質" },

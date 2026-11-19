@@ -12,7 +12,7 @@ import { container, pageTop } from "./lib/ui";
 // 常用入口
 const links = [
   { href: "/", label: "回首頁" },
-  { href: "/#collections", label: "產品系列" },
+  { href: "/products", label: "產品系列" },
   { href: "/contact", label: "聯絡我們" },
 ];
 

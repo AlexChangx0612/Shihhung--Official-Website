@@ -189,11 +189,15 @@ export default function SiteFooter({ barOnly = false }: { barOnly?: boolean }) {
     );
 
   // Products 欄：各產品系列
-  const productLinks: NavLink[] = getCatalog().categories.map((c) => ({
-    href: `/products/${c.slug}`,
-    zh: c.name,
-    en: titleCase(c.en),
-  }));
+  const productLinks: NavLink[] = [
+    ...getCatalog().categories.map((c) => ({
+      href: `/products/${c.slug}`,
+      zh: c.name,
+      en: titleCase(c.en),
+    })),
+    // 最後一項：全系列產品頁（產品牆）
+    { href: "/products", zh: "全部產品", en: "All Products" },
+  ];
 
   return (
     <footer className="bg-brand-deep text-white">

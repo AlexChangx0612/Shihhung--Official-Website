@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       ...legacyRedirects.map((r) => ({ ...r, permanent: true })),
-      // 特價商品已下架：舊的特價商品網址一律導到首頁「產品系列」區塊
-      { source: "/products/special-offers/:path*", destination: "/#collections", permanent: true },
+      // 特價商品已下架：舊的特價商品網址一律導到全系列產品頁
+      { source: "/products/special-offers/:path*", destination: "/products", permanent: true },
       // P4-45LBK、P4-45LGD 從伸縮帶欄柱移到海報架・告示牌
       { source: "/products/retractable-belt-stanchions/:code(new-046-001|new-047-001)", destination: "/products/poster-sign-stands/:code", permanent: true },
       // RF-19BU、RF-19BU-FD 從數位看板・燈箱移到展覽佈展欄柱

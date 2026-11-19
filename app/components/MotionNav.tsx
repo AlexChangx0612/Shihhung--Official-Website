@@ -189,6 +189,15 @@ function ProductsMenu({
               </li>
             ))}
           </ul>
+          {/* 面板底部：連到全系列產品頁（產品牆） */}
+          <Link
+            href="/products"
+            onClick={() => setOpen(false)}
+            className="mt-2 flex items-center justify-between gap-3 border-t border-line px-4 pt-4 pb-2 text-sm font-medium tracking-[0.08em] text-brand-deep transition-colors hover:text-brand"
+          >
+            查看所有產品
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
     </>

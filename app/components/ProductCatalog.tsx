@@ -208,7 +208,7 @@ export default function ProductCatalog({ categories }: { categories: Category[] 
         <div className="flex flex-col gap-5 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             {/* 系列名稱：品牌紅大字 */}
-            <h3 className="text-2xl tracking-[0.1em] text-brand lg:text-3xl">{active.name}</h3>
+            <h2 className="text-2xl tracking-[0.1em] text-brand lg:text-3xl">{active.name}</h2>
             {/* 系列說明：灰字 */}
             <p className="mt-3 text-sm leading-7 text-muted">{active.desc}</p>
           </div>
