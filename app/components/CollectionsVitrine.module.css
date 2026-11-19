@@ -1,0 +1,493 @@
+/* 首頁「產品系列」玻璃展示櫃輪播：背景、區塊頭、單列輪播、玻璃卡片 */
+
+/* ===== 區塊 ===== */
+/* 暖白底；超出範圍的柔光與 LOGO 裁掉；isolation 讓背景層的 z-index 不影響外面 */
+.root {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(64px, 8vw, 112px) clamp(16px, 4vw, 56px) clamp(72px, 9vw, 128px);
+  background: var(--color-paper);
+}
+
+/* 背景：向量 LOGO 零散分布（SVG，放大也清晰） */
+.scatter {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* 每個 LOGO 以中心點定位，再旋轉、調透明度（--r、--o 由元件給） */
+.logo {
+  position: absolute;
+  max-width: none;
+  transform: translate(-50%, -50%) rotate(var(--r));
+  opacity: var(--o);
+}
+
+/* 背景：品牌紅徑向柔光（玻璃後面要有東西才看得出「透」） */
+.glow {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* 左上大團紅光 */
+.g1 {
+  width: 56vw;
+  height: 56vw;
+  max-width: 820px;
+  max-height: 820px;
+  left: -14vw;
+  top: -10vw;
+  background: radial-gradient(circle, rgba(255, 55, 64, 0.42), rgba(255, 55, 64, 0) 65%);
+}
+
+/* 右側粉紅光 */
+.g2 {
+  width: 44vw;
+  height: 44vw;
+  max-width: 640px;
+  max-height: 640px;
+  right: -8vw;
+  top: 30%;
+  background: radial-gradient(circle, rgba(255, 150, 155, 0.5), rgba(255, 150, 155, 0) 65%);
+}
+
+/* 下方中間淡紅光 */
+.g3 {
+  width: 36vw;
+  height: 36vw;
+  max-width: 520px;
+  max-height: 520px;
+  left: 38%;
+  bottom: -16vw;
+  background: radial-gradient(circle, rgba(255, 90, 96, 0.32), rgba(255, 90, 96, 0) 65%);
+}
+
+/* ===== 區塊頭 ===== */
+/* 左標題說明、右連結；窄畫面自動換行 */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 40px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+
+/* 標題：品牌深紅、特粗 */
+.title {
+  margin: 0;
+  font-size: clamp(36px, 4.4vw, 60px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  color: var(--color-brand-deep);
+}
+
+/* 說明 */
+.desc {
+  margin: 12px 0 0;
+  max-width: 34em;
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.8;
+  color: var(--color-muted);
+}
+
+/* 查看所有系列：底線文字連結＋小箭頭 */
+.all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: color 0.35s var(--ease);
+}
+
+.all:hover {
+  color: var(--color-brand-deep);
+}
+
+.all svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== 單列輪播 ===== */
+/* 左按鈕｜軌道｜右按鈕 */
+.rail {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 20px);
+}
+
+/* 軌道：原生橫向捲動＋scroll-snap；--per 是一次可見張數 */
+.track {
+  --per: 4;
+  --gap: clamp(12px, 1.4vw, 20px);
+  list-style: none;
+  margin: 0;
+  /* 上下留空間給卡片上浮與陰影，左右 4px 給焦點外框 */
+  padding: 14px 4px 24px;
+  display: flex;
+  gap: var(--gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+/* 隱藏捲軸（WebKit） */
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+/* 每張卡等寬：(軌道寬 − 間距總和) ÷ 可見張數 */
+.track > li {
+  flex: 0 0 calc((100% - var(--gap) * (var(--per) - 1)) / var(--per));
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+/* 左右按鈕：同樣是玻璃材質 */
+.nav {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--color-brand-deep);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px) saturate(150%);
+  -webkit-backdrop-filter: blur(6px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 10px 24px -12px rgba(120, 30, 30, 0.4);
+  transition:
+    background 0.35s var(--ease),
+    color 0.35s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.nav svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 滑鼠移上：轉品牌紅 */
+.nav:hover {
+  background: var(--color-brand);
+  color: #fff;
+  border-color: var(--color-brand);
+}
+
+/* 按下：微縮 */
+.nav:active {
+  transform: scale(0.94);
+}
+
+/* 鍵盤焦點：深紅外框 */
+.nav:focus-visible {
+  outline: 2px solid var(--color-brand-deep);
+  outline-offset: 3px;
+}
+
+/* 目前位置文字：數字等寬 */
+.count {
+  margin: 6px 0 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.count b {
+  color: var(--color-brand-deep);
+}
+
+/* ===== 玻璃展示櫃 ===== */
+/* --mx、--my：游標反光位置 */
+.case {
+  --mx: 30%;
+  --my: 0%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 3 / 4;
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--color-ink);
+  /* 清玻璃：幾乎不霧化，只帶一點點白與飽和 */
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.1) 38%, rgba(255, 255, 255, 0.06) 100%);
+  backdrop-filter: blur(2px) saturate(150%);
+  -webkit-backdrop-filter: blur(2px) saturate(150%);
+  /* 玻璃邊：上緣亮、下緣暗，像有厚度 */
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(160, 60, 60, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 0 0 24px rgba(255, 255, 255, 0.35),
+    0 18px 40px -22px rgba(120, 30, 30, 0.35),
+    0 2px 6px -2px rgba(120, 30, 30, 0.12);
+  transition:
+    transform 0.6s var(--ease),
+    box-shadow 0.6s var(--ease);
+}
+
+/* 跟著游標移動的反光 */
+.case::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 45%);
+  opacity: 0.55;
+  transition: opacity 0.5s var(--ease);
+}
+
+/* 一道固定的斜向反光，表現玻璃面；hover 時掃過 */
+.case::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  top: -20%;
+  left: -30%;
+  width: 28%;
+  height: 140%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0));
+  transform: rotate(18deg) translateX(0);
+  transition: transform 1.1s var(--ease);
+}
+
+/* hover／鍵盤焦點：上浮 6px、陰影加深 */
+.case:hover,
+.case:focus-visible {
+  transform: translateY(-6px);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(160, 60, 60, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    inset 0 0 30px rgba(255, 255, 255, 0.45),
+    0 30px 50px -24px rgba(120, 30, 30, 0.45),
+    0 4px 10px -4px rgba(120, 30, 30, 0.15);
+}
+
+.case:hover::before {
+  opacity: 1;
+}
+
+.case:hover::after {
+  transform: rotate(18deg) translateX(560%);
+}
+
+/* 鍵盤焦點：深紅外框 */
+.case:focus-visible {
+  outline: 2px solid var(--color-brand-deep);
+  outline-offset: 4px;
+}
+
+/* 櫃內展示區：佔滿名牌以上的空間 */
+.show {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 產品圖範圍：上 9%、左右 12%、下 8% */
+.shot {
+  position: absolute;
+  z-index: 1;
+  inset: 9% 12% 8%;
+  transition: transform 0.7s var(--ease);
+}
+
+/* 去背產品圖：等比縮放、靠底置中，帶一點落地投影 */
+.img {
+  object-fit: contain;
+  object-position: 50% 100%;
+  filter: drop-shadow(0 14px 14px rgba(60, 20, 20, 0.18));
+}
+
+.case:hover .shot {
+  transform: translateY(-4px) scale(1.04);
+}
+
+/* 底座的落地陰影 */
+.show::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 6%;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(90, 30, 30, 0.22), rgba(90, 30, 30, 0) 70%);
+}
+
+/* 名牌：玻璃櫃下緣一塊再清一點的標籤 */
+.tag {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.55));
+}
+
+/* 系列名稱 */
+.name {
+  margin: 0;
+  font-size: clamp(15px, 1.15vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+/* 英文簡稱・款數：不換行，避免名牌高度不一 */
+.meta {
+  margin-top: 3px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta b {
+  color: var(--color-brand-deep);
+  font-weight: 700;
+}
+
+/* 箭頭圓鈕：hover 轉品牌紅 */
+.go {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 4px 10px -4px rgba(120, 30, 30, 0.3);
+  color: var(--color-brand-deep);
+  transition:
+    background 0.4s var(--ease),
+    color 0.4s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.go svg {
+  width: 15px;
+  height: 15px;
+}
+
+.case:hover .go {
+  background: var(--color-brand);
+  color: #fff;
+  border-color: var(--color-brand);
+  transform: translateX(2px);
+}
+
+/* 英文簡稱（電腦版顯示） */
+.en {
+  display: inline;
+}
+
+/* ===== 平板（≤1024px）：一次 3 張，隱藏英文簡稱 ===== */
+@media (max-width: 1024px) {
+  .track {
+    --per: 3;
+  }
+
+  .en {
+    display: none;
+  }
+
+  /* 卡片變窄，較長的系列名會換兩行：名牌一律留兩行名稱的高度，13 張展示區等高 */
+  /* 上下內距 30px＋兩行名稱（15px × 1.3 × 2）＋間距 3px＋款數一行（12px × 1.4） */
+  .tag {
+    min-height: calc(30px + 15px * 1.3 * 2 + 3px + 12px * 1.4);
+  }
+}
+
+/* ===== 手機（≤640px）：一次 1.6 張（露出下一張提示可滑），按鈕縮小 ===== */
+@media (max-width: 640px) {
+  .track {
+    --per: 1.6;
+  }
+
+  .rail {
+    gap: 8px;
+  }
+
+  .nav {
+    width: 42px;
+    height: 42px;
+  }
+
+  /* 名牌內距與箭頭圓鈕縮小，讓系列名稱多一點寬度 */
+  .tag {
+    gap: 8px;
+    padding: 14px 12px 16px;
+  }
+
+  .go {
+    width: 28px;
+    height: 28px;
+  }
+
+  .go svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* 使用者偏好減少動態：取消平滑捲動與所有動畫 */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    scroll-behavior: auto;
+  }
+
+  .root *,
+  .root *::before,
+  .root *::after {
+    transition: none !important;
+  }
+
+  .case:hover,
+  .case:focus-visible,
+  .case:hover .shot {
+    transform: none;
+  }
+}

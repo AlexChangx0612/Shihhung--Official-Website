@@ -2,8 +2,8 @@
 import type { Metadata } from "next";
 // 匯入客戶實際案例弧形輪播
 import CaseCarousel from "./components/CaseCarousel";
-// 匯入「產品系列」標題區（新品聚光燈）
-import CollectionsSpotlight from "./components/CollectionsSpotlight";
+// 匯入「產品系列」玻璃展示櫃輪播
+import CollectionsVitrine from "./components/CollectionsVitrine";
 // 匯入聯絡區塊
 import ContactSection from "./components/ContactSection";
 // 匯入常見問題清單
@@ -12,8 +12,6 @@ import FaqList from "./components/FaqList";
 import JsonLd from "./components/JsonLd";
 // 匯入首屏主視覺（超大標題＋無限捲動磚牆）
 import HeroMosaic from "./components/HeroMosaic";
-// 匯入全系列商品目錄
-import ProductCatalog from "./components/ProductCatalog";
 // 匯入區塊標題元件
 import SectionTitle from "./components/SectionTitle";
 // 匯入頁尾
@@ -22,6 +20,8 @@ import SiteFooter from "./components/SiteFooter";
 import SiteHeader from "./components/SiteHeader";
 // 匯入讀取產品圖片的函式
 import { getCatalog } from "./lib/products";
+// 匯入系列卡片資料（伺服器端讀檔）
+import { getCollectionCards } from "./lib/collections";
 // 匯入客戶實際案例資料（置換照片與說明請改這個檔案）
 import { cases } from "./lib/cases";
 // 匯入首頁常見問題
@@ -29,7 +29,7 @@ import { homeFaqs } from "./lib/faq";
 // 匯入 SEO 工具
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, ORG_ID, organizationJsonLd, pageMetadata, SITE_URL } from "./lib/site";
 // 匯入共用樣式
-import { container, wide } from "./lib/ui";
+import { container } from "./lib/ui";
 
 // 首頁標題、描述與 canonical
 export const metadata: Metadata = pageMetadata({ title: HOME_TITLE, description: HOME_DESCRIPTION, path: "/" });
@@ -63,16 +63,10 @@ export default function Home() {
         {/* 首屏：超大標題＋無限捲動磚牆 */}
         <HeroMosaic images={mosaic} />
 
-        {/* 產品系列＋全系列商品（整合為同一區塊）：上方系列圖示方塊切換分類，下方顯示該系列商品 */}
-        {/* 緊接首屏，首屏「尋找產品」直接到這裡；上方有分隔線；scroll-mt 讓錨點跳轉時不被固定的 header 擋住 */}
-        <section id="collections" className="scroll-mt-20 sm:scroll-mt-24 border-t border-line py-20 sm:py-28">
-          {/* 滿版：不限最大寬度，佔滿整個畫面 */}
-          <div className={wide}>
-            {/* 標題區：左邊標題與系列入口，右邊新品／服務／LINE 諮詢分頁式輪播（內容在 app/lib/spotlight.ts） */}
-            <CollectionsSpotlight categories={links} />
-            {/* 商品目錄（系列方塊＋商品圖片） */}
-            <ProductCatalog categories={categories} />
-          </div>
+        {/* 產品系列：13 張玻璃展示櫃卡片的循環輪播，點卡片進系列頁；全部產品牆在 /products */}
+        {/* 緊接首屏，首屏「尋找產品」直接到這裡；上方有分隔線；scroll-mt 讓錨點跳轉時不被固定的 header 擋住；上下留白與背景由元件負責 */}
+        <section id="collections" aria-labelledby="collections-title" className="scroll-mt-20 sm:scroll-mt-24 border-t border-line">
+          <CollectionsVitrine cards={getCollectionCards()} />
         </section>
 
         {/* 客戶實際案例：弧形輪播（上方有分隔線，與其他區塊一致） */}
