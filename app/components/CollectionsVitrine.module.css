@@ -137,13 +137,14 @@
   --gap: clamp(12px, 1.4vw, 20px);
   list-style: none;
   margin: 0;
-  /* 上下留空間給卡片上浮與陰影，左右 4px 給焦點外框 */
-  padding: 14px 4px 24px;
+  /* 上下留空間給卡片上浮與陰影；左右 8px 容納焦點外框（外框 2px＋間距 4px），首尾卡片外框才不會被裁切 */
+  padding: 14px 8px 24px;
   display: flex;
   gap: var(--gap);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 4px;
+  /* 與左右內距相同，卡片吸附時左緣對齊內距 */
+  scroll-padding-inline: 8px;
   scroll-behavior: smooth;
   scrollbar-width: none;
   overscroll-behavior-x: contain;

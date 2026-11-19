@@ -258,7 +258,8 @@ export default function CollectionsVitrine({ cards }: { cards: CollectionCard[] 
       </div>
 
       {/* 輪播：左按鈕、軌道、右按鈕（循環，按鈕永不停用） */}
-      <div className={s.rail} role="region" aria-roledescription="輪播" aria-labelledby="collections-title">
+      {/* 用 group 而非 region：外層 section 已是「產品系列」地標，避免讀屏出現兩個同名地標 */}
+      <div className={s.rail} role="group" aria-roledescription="輪播" aria-label="產品系列輪播">
         <button type="button" className={s.nav} aria-label="上一個系列" onClick={() => go(-1)}>
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M16 10H4M9 5l-5 5 5 5" />
