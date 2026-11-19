@@ -20,8 +20,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       ...legacyRedirects.map((r) => ({ ...r, permanent: true })),
-      // 產品系列總覽頁已移除：導到首頁「產品系列」區塊
-      { source: "/products", destination: "/#collections", permanent: true },
       // 特價商品已下架：舊的特價商品網址一律導到首頁「產品系列」區塊
       { source: "/products/special-offers/:path*", destination: "/#collections", permanent: true },
       // P4-45LBK、P4-45LGD 從伸縮帶欄柱移到海報架・告示牌
