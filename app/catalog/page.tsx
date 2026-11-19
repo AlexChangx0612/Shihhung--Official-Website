@@ -1,17 +1,15 @@
 // 匯入 Next.js 網頁中繼資料型別
 import type { Metadata } from "next";
-// 匯入麵包屑
-import Breadcrumbs from "../components/Breadcrumbs";
+// 匯入滿版照片頁首與玻璃按鈕
+import { GlassShine, PhotoHero, glassBtn } from "../components/AboutBlocks";
 // 匯入結構化資料元件
 import JsonLd from "../components/JsonLd";
 // 匯入內頁外框
 import PageShell from "../components/PageShell";
-// 匯入區塊標題
-import SectionTitle from "../components/SectionTitle";
 // 匯入 SEO 工具
 import { absoluteUrl, pageMetadata } from "../lib/site";
 // 匯入共用樣式
-import { card, container, outlineBtn, pageTop } from "../lib/ui";
+import { card, container, outlineBtn } from "../lib/ui";
 
 // 目錄 PDF（public/catalog 底下；換新版目錄時置換這個檔案即可）
 const CATALOG_PDF = "/catalog/shihhung-catalog-2023.pdf";
@@ -30,10 +28,6 @@ export const metadata: Metadata = pageMetadata({
   path: "/catalog",
 });
 
-// 紅底白字按鈕（與客戶案例區按鈕相同的品牌紅）
-const solidBtn =
-  "inline-flex items-center justify-center gap-3 border border-brand-deep bg-brand-deep px-10 py-3.5 text-sm tracking-[0.2em] text-white transition hover:border-brand hover:bg-brand active:translate-y-px";
-
 // 下載圖示
 function DownloadIcon() {
   return (
@@ -50,34 +44,37 @@ export default function CatalogPage() {
       {/* 結構化資料：目錄頁 */}
       <JsonLd data={[{ "@type": "WebPage", name: "產品電子目錄", description, url: absoluteUrl("/catalog") }]} />
 
-      <section className={`${pageTop} pb-20 sm:pb-28`}>
-        <div className={container}>
-          {/* 標題列：手機上下排列；電腦左標題、右按鈕 */}
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <Breadcrumbs items={[{ name: "首頁", path: "/" }, { name: "產品電子目錄", path: "/catalog" }]} />
-              <div className="mt-10">
-                <SectionTitle
-                  as="h1"
-                  align="left"
-                  title="產品電子目錄"
-                  desc="線上瀏覽世紘全系列產品，或下載 PDF 版本隨時查閱。詢價時提供目錄上的型號，專員可更快為您提供服務。"
-                />
-              </div>
-            </div>
-            {/* 下載＋另開新視窗 */}
-            <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
-              <a href={CATALOG_PDF} download={DOWNLOAD_NAME} className={solidBtn}>
+      {/* 頁首：滿版照片橫幅（與其他內頁同一個元件），下載與另開視窗按鈕放在橫幅內 */}
+      <PhotoHero
+        crumbs={[{ name: "首頁", path: "/" }, { name: "產品電子目錄", path: "/catalog" }]}
+        eyebrow="Catalog"
+        title="產品電子目錄"
+        subtitle={<>線上瀏覽世紘全系列產品，或下載 PDF 版本隨時查閱。<br className="max-sm:hidden" />詢價時提供目錄上的型號，專員可更快為您提供服務。</>}
+        // 招牌在照片右上、型錄在下方中間：往上對齊避免切到招牌；手機往右移讓招牌露出
+        image={{ src: "/catalog/catalog-hero-v5.png", alt: "展示洽談室的石桌上攤開世紘產品目錄與規格單，平板顯示新品頁面，後方木牆上掛著世紘興業有限公司招牌", position: "50% 20%", mobilePosition: "92% 50%" }}
+        actions={
+          <>
+            <a href={CATALOG_PDF} download={DOWNLOAD_NAME} className={glassBtn}>
+              <GlassShine />
+              <span className="relative">
                 <DownloadIcon />
-                下載目錄
-                <span className="text-xs tracking-[0.1em] text-white/80">PDF・{FILE_SIZE}</span>
-              </a>
-              <a href={CATALOG_PDF} target="_blank" rel="noopener noreferrer" className={outlineBtn}>
-                另開視窗瀏覽 ↗
-              </a>
-            </div>
-          </div>
+              </span>
+              <span className="relative">下載目錄</span>
+              <span className="relative text-sm text-white/75">PDF・{FILE_SIZE}</span>
+            </a>
+            <a href={CATALOG_PDF} target="_blank" rel="noopener noreferrer" className={glassBtn}>
+              <GlassShine />
+              <span className="relative">另開視窗瀏覽</span>
+              <span aria-hidden="true" className="relative">
+                ↗
+              </span>
+            </a>
+          </>
+        }
+      />
 
+      <section className="pb-20 sm:pb-28">
+        <div className={container}>
           {/* 電腦與平板：內嵌預覽（瀏覽器內建 PDF 檢視器，可翻頁、縮放） */}
           <div className={`mt-14 hidden overflow-hidden p-2 md:block ${card}`}>
             <iframe

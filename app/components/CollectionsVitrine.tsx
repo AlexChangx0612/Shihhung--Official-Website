@@ -24,6 +24,11 @@ const LOGOS = [
 
 // 捲動停止的備援等待時間（瀏覽器不支援 scrollend 時使用）
 const SETTLE_MS = 150;
+// 左右按鈕滑一張的動畫時間
+const SLIDE_MS = 500;
+// 緩動曲線：第一下用慢起慢停；動畫進行中又按，已在移動，改用直接減速收尾，避免中途停頓
+const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
 
 // 小箭頭（卡片名牌右側圓鈕、查看所有系列）
 function Arrow() {
@@ -41,7 +46,8 @@ function Case({ card }: { card: CollectionCard }) {
       {/* 櫃內：去背產品圖靠底置中，下方有落地陰影 */}
       <div className={s.show}>
         <div className={s.shot}>
-          <Image src={card.image} alt="" fill sizes="(max-width:640px) 60vw, (max-width:1024px) 33vw, 25vw" className={s.img} />
+          {/* 不延遲載入：避免點按鈕時新滑進來的卡片才開始載圖、解碼，造成滑動卡頓 */}
+          <Image src={card.image} alt="" fill loading="eager" sizes="(max-width:640px) 60vw, (max-width:1024px) 33vw, 25vw" className={s.img} />
         </div>
       </div>
       {/* 名牌：系列名稱＋英文簡稱・款數＋箭頭圓鈕 */}
@@ -72,6 +78,8 @@ export default function CollectionsVitrine({ cards }: { cards: CollectionCard[] 
   const cur = useRef(n);
   // 按鈕平滑捲動中的目標索引（捲動停止後清掉）
   const target = useRef<number | null>(null);
+  // 按鈕滑動動畫的畫面排程編號（0 表示沒有在動畫）
+  const anim = useRef(0);
   // 位置文字（伺服器端先用電腦版 4 張，掛載後依實際寬度更新）
   const [label, setLabel] = useState(() => rangeLabel(0, 4, n));
 
@@ -105,7 +113,8 @@ export default function CollectionsVitrine({ cards }: { cards: CollectionCard[] 
   // 捲動停止後：若停在前後複製區，不帶動畫地換回對應的真卡片位置
   const settle = () => {
     const track = trackRef.current;
-    if (!track) return;
+    // 按鈕動畫進行中每格都會觸發捲動事件，等動畫結束再處理
+    if (!track || anim.current) return;
     target.current = null;
     const idx = Math.round(track.scrollLeft / step());
     if (idx < n) jumpTo(idx + n);
@@ -180,20 +189,45 @@ export default function CollectionsVitrine({ cards }: { cards: CollectionCard[] 
       ro.disconnect();
       window.clearTimeout(timer);
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(anim.current);
     };
     // 只在掛載時綁定一次（函式內都透過 ref 讀最新的 DOM）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 左右按鈕：一次捲動一張（卡寬＋間距）；使用者偏好減少動態時不平滑捲動
-  // 平滑捲動還沒停時又按：從上一次的目標再往前一張（連按幾次就走幾張，不會少算）
+  // 左右按鈕：一次捲動一張（卡寬＋間距），用自己的動畫控制速度曲線；使用者偏好減少動態時直接跳過去
+  // 動畫還沒停時又按：從上一次的目標再往前一張（連按幾次就走幾張，不會少算）
   const go = (dir: 1 | -1) => {
     const track = trackRef.current!;
     const st = step();
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const base = target.current ?? Math.round(track.scrollLeft / st);
     target.current = base + dir;
-    track.scrollTo({ left: target.current * st, behavior: reduce ? "auto" : "smooth" });
+    const to = target.current * st;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      track.scrollTo({ left: to });
+      return;
+    }
+    const ease = anim.current ? easeOut : easeInOut;
+    cancelAnimationFrame(anim.current);
+    const from = track.scrollLeft;
+    const t0 = performance.now();
+    // 動畫期間關掉吸附與 CSS 平滑捲動，否則每格設定位置都會被瀏覽器拉回或再補動畫
+    track.style.scrollSnapType = "none";
+    track.style.scrollBehavior = "auto";
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / SLIDE_MS);
+      track.scrollLeft = from + (to - from) * ease(p);
+      if (p < 1) {
+        anim.current = requestAnimationFrame(tick);
+        return;
+      }
+      // 停在卡片對齊位置後才恢復吸附，再做循環換位
+      anim.current = 0;
+      track.style.scrollSnapType = "";
+      track.style.scrollBehavior = "";
+      settle();
+    };
+    anim.current = requestAnimationFrame(tick);
   };
 
   // 焦點在輪播內時，左右方向鍵等同按鈕

@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 // 匯入 404 處理
 import { notFound } from "next/navigation";
+// 匯入滿版照片頁首
+import { PhotoHero } from "../../components/AboutBlocks";
 // 匯入麵包屑
 import Breadcrumbs from "../../components/Breadcrumbs";
 // 匯入常見問題清單
@@ -24,6 +26,21 @@ import { getCatalog, getCategory, type CatalogItem } from "../../lib/products";
 import { absoluteUrl, faqJsonLd, ORG_ID, pageMetadata } from "../../lib/site";
 // 匯入共用樣式
 import { bodyText, card, cardHover, cardTitle, container, outlineBtn, pageTop, section } from "../../lib/ui";
+
+// 系列頁首照片（public/product-heroes）；有照片的系列改用滿版照片頁首，其餘維持去背圖版型
+// position／mobilePosition 為電腦版／手機版的裁切對齊位置
+const heroImages: Record<string, { alt: string; position?: string; mobilePosition?: string }> = {
+  "retractable-belt-stanchions": {
+    alt: "明亮的服務大廳裡，五支鍍鉻伸縮帶欄柱以紅色織帶圍出通往櫃台的排隊動線",
+    position: "50% 100%",
+    mobilePosition: "72% 50%",
+  },
+  "rope-stanchions": {
+    alt: "飯店宴會廳入口的大理石廊道上，四支金色圓球頭迎賓欄柱掛著酒紅色絨布繩，引導賓客走向敞開的宴會廳大門",
+    position: "50% 50%",
+    mobilePosition: "72% 50%",
+  },
+};
 
 // 只產生已知的分類頁，其他網址回傳 404
 export const dynamicParams = false;
@@ -94,6 +111,20 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
 
   // 網址
   const path = `/products/${cat.slug}`;
+  // 麵包屑
+  const crumbs = [
+    { name: "首頁", path: "/" },
+    { name: "產品系列", path: "/products" },
+    { name: cat.name, path },
+  ];
+  // 頁首照片（沒有就用去背圖版型）
+  const hero = heroImages[cat.slug];
+  // 標題拆成主標與副標（以「｜」分隔）
+  const [titleMain, titleSub] = content.h1.split("｜");
+  // 照片頁首的說明：手機只顯示前兩句（避免橫幅被撐高、文字壓到照片主體），其餘句子平板以上才顯示
+  const sentences = content.intro.match(/[^。]+。?/g) ?? [content.intro];
+  const introHead = sentences.slice(0, 2).join("");
+  const introRest = sentences.slice(2).join("");
 
   return (
     <PageShell>
@@ -112,16 +143,33 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
         ]}
       />
 
-      {/* 頁首：麵包屑、標題與介紹 */}
+      {hero ? (
+        // 頁首：滿版照片橫幅（與目錄、關於世紘等內頁同一個元件）；標題「｜」後半段縮小換行
+        <div className="pb-20 sm:pb-28">
+          <PhotoHero
+            crumbs={crumbs}
+            eyebrow={cat.en}
+            title={
+              <>
+                {titleMain}
+                {titleSub && <span className="mt-3 block text-[0.42em] leading-snug font-medium">{titleSub}</span>}
+              </>
+            }
+            subtitle={
+              <>
+                {introHead}
+                {introRest && <span className="max-sm:hidden">{introRest}</span>}
+              </>
+            }
+            link={{ href: "#contact", label: "專員為您提供服務" }}
+            image={{ src: `/product-heroes/${cat.slug}.png`, ...hero }}
+          />
+        </div>
+      ) : (
+      /* 頁首：麵包屑、標題與介紹 */
       <section className={`${pageTop} pb-20 sm:pb-28`}>
         <div className={container}>
-          <Breadcrumbs
-            items={[
-              { name: "首頁", path: "/" },
-              { name: "產品系列", path: "/products" },
-              { name: cat.name, path },
-            ]}
-          />
+          <Breadcrumbs items={crumbs} />
           {/* 左：標題與介紹；右：該系列代表產品去背圖（平板以上才顯示） */}
           <div className="mt-10 grid items-center gap-10 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
             <div className="max-w-3xl">
@@ -146,6 +194,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
           </div>
         </div>
       </section>
+      )}
 
       {cat.groups ? (
         <>

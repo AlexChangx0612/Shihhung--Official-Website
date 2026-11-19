@@ -12,14 +12,29 @@ import type { Crumb } from "../lib/site";
 // 匯入共用樣式
 import { container } from "../lib/ui";
 
+// 玻璃按鈕：半透明白底＋背景模糊＋細白框，上緣內光；滑鼠移上時一道光從左掃到右（需搭配 GlassShine）
+export const glassBtn =
+  "group relative inline-flex min-h-12 items-center gap-3 overflow-hidden rounded-full border border-white/35 bg-white/10 px-7 text-base font-medium tracking-[0.06em] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.45),0_8px_32px_-8px_rgba(0,0,0,.45)] backdrop-blur-md transition duration-300 hover:border-white/60 hover:bg-white/20";
+
+// 玻璃按鈕的透光：斜向白色光帶，平時藏在按鈕左外側，滑鼠移上時掃過
+export function GlassShine() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/45 to-transparent opacity-0 transition-[left,opacity] duration-700 ease-out group-hover:left-[120%] group-hover:opacity-100 motion-reduce:hidden"
+    />
+  );
+}
+
 // 頁首：滿版照片橫幅（圓角，左右與浮動 header 對齊），照片上加深色漸層，左側疊白字：
-// 麵包屑、英文小標、中文大標、說明與一個連結
+// 麵包屑、英文小標、中文大標、說明與一個連結（或自訂按鈕列 actions）
 export function PhotoHero({
   crumbs,
   eyebrow,
   title,
   subtitle,
   link,
+  actions,
   image,
 }: {
   crumbs: Crumb[];
@@ -29,6 +44,8 @@ export function PhotoHero({
   subtitle: React.ReactNode;
   // 玻璃按鈕連結（沒給就不顯示按鈕）
   link?: { href: string; label: string };
+  // 自訂按鈕列（例：目錄頁的下載與另開視窗），放在說明下方
+  actions?: React.ReactNode;
   // 背景照片；position 為裁切對齊位置（object-position）
   // mobilePosition：手機版（< sm）另用的裁切對齊位置，版型不變，只換照片露出的部分
   image: { src: string; alt: string; position?: string; mobilePosition?: string };
@@ -70,17 +87,10 @@ export function PhotoHero({
           <p className="mt-6 max-w-[34em] text-base leading-[1.9] sm:text-lg">
             {subtitle}
           </p>
-          {/* 玻璃按鈕：半透明白底＋背景模糊＋細白框，上緣內光；滑鼠移上時一道光從左掃到右 */}
+          {/* 玻璃按鈕 */}
           {link && (
-            <Link
-              href={link.href}
-              className="group relative mt-10 inline-flex min-h-12 items-center gap-3 overflow-hidden rounded-full border border-white/35 bg-white/10 px-7 text-base font-medium tracking-[0.06em] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.45),0_8px_32px_-8px_rgba(0,0,0,.45)] backdrop-blur-md transition duration-300 hover:border-white/60 hover:bg-white/20"
-            >
-              {/* 透光：斜向白色光帶，平時藏在按鈕左外側，滑鼠移上時掃過 */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/45 to-transparent opacity-0 transition-[left,opacity] duration-700 ease-out group-hover:left-[120%] group-hover:opacity-100 motion-reduce:hidden"
-              />
+            <Link href={link.href} className={`${glassBtn} mt-10`}>
+              <GlassShine />
               <span className="relative">{link.label}</span>
               <span
                 aria-hidden="true"
@@ -90,6 +100,7 @@ export function PhotoHero({
               </span>
             </Link>
           )}
+          {actions && <div className="mt-10 flex flex-wrap gap-3">{actions}</div>}
         </div>
       </div>
     </section>
