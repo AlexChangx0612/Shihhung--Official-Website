@@ -245,6 +245,125 @@ body {
   opacity: 0;
 }
 
+/* 產品規格表：標題旁細線由左拉出，每列底線由左拉出、文字淡入，逐列延遲 90ms */
+.ledger-rule {
+  transform-origin: left;
+  transition: transform 1.1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.spec-row::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--color-line);
+  transform-origin: left;
+  transition:
+    transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i) * 90ms + 150ms),
+    background-color 0.3s;
+}
+.spec-row:hover::after {
+  background: color-mix(in srgb, var(--color-brand-deep) 45%, transparent);
+}
+.spec-cell,
+.spec-note {
+  transition-property: opacity, transform, color;
+  transition-duration: 0.7s, 0.7s, 0.3s;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.spec-row .spec-cell,
+.feature-row .spec-cell {
+  transition-delay: calc(var(--i) * 90ms + 250ms), calc(var(--i) * 90ms + 250ms), 0s;
+}
+/* 產品特色：每條前方的紅色短線由 0 拉到 16px，逐條延遲 */
+.feature-mark {
+  width: 16px;
+  transition: width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i) * 90ms + 200ms);
+}
+[data-armed]:not([data-in]) .feature-mark {
+  width: 0;
+}
+.spec-note {
+  transition-delay: 0.8s;
+}
+[data-armed]:not([data-in]) .ledger-rule {
+  transform: scaleX(0);
+}
+[data-armed]:not([data-in]) .spec-row::after {
+  transform: scaleX(0);
+}
+[data-armed]:not([data-in]) .spec-cell,
+[data-armed]:not([data-in]) .spec-note {
+  opacity: 0;
+  transform: translateY(10px);
+}
+/* 進場完成後，滑鼠移上的位移不再帶延遲 */
+[data-in] .spec-row:hover .spec-cell {
+  transition-delay: 0s;
+}
+
+/* 產品展示台換色：柱身新顏色由上往下流過、織帶由左往右拉出（像把織帶拉出來） */
+.paint-down {
+  animation: paint-down 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+}
+.paint-right {
+  animation: paint-right 0.7s cubic-bezier(0.65, 0, 0.25, 1) 0.15s both;
+}
+.stage-fade {
+  animation: stage-fade 0.5s ease-out both;
+}
+@keyframes paint-down {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes paint-right {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes stage-fade {
+  from {
+    opacity: 0;
+  }
+}
+/* 型號換字：舊型號往上淡出、新型號從下方淡入 */
+.model-in {
+  animation: model-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes model-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paint-down,
+  .paint-right,
+  .stage-fade,
+  .model-in {
+    animation: none;
+  }
+}
+
+/* 適用場所卡片：逐張淡入上移，間隔 110ms */
+.place-card {
+  transition-property: opacity, transform;
+  transition-duration: 0.8s;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc(var(--i) * 110ms);
+}
+[data-armed]:not([data-in]) .place-card {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
 /* 拉伸試驗台：織帶與拉環同步拉出 900mm 再收回，3 秒一次 */
 .rig-belt {
   width: 16%;

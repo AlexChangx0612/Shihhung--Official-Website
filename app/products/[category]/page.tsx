@@ -40,6 +40,21 @@ const heroImages: Record<string, { alt: string; position?: string; mobilePositio
     position: "50% 50%",
     mobilePosition: "72% 50%",
   },
+  "exhibition-stanchions": {
+    alt: "美術館展廳的石材地板上，四支黑色展覽欄柱以細繩相連，圍出畫作前的參觀界線",
+    position: "50% 70%",
+    mobilePosition: "70% 50%",
+  },
+  "plastic-stanchions": {
+    alt: "室內停車場的灰色地坪上，三支紅白相間與三支黃黑相間的塑膠警示欄柱，各以同色塑膠鏈條相連，圍出兩塊區域",
+    position: "50% 60%",
+    mobilePosition: "70% 50%",
+  },
+  barriers: {
+    alt: "辦公大樓車道入口的石材地面上，兩組紅色烤漆拒馬並排擋在入口前",
+    position: "50% 60%",
+    mobilePosition: "75% 50%",
+  },
 };
 
 // 只產生已知的分類頁，其他網址回傳 404

@@ -14,6 +14,22 @@ import JsonLd from "../../../components/JsonLd";
 import PageShell from "../../../components/PageShell";
 // 匯入區塊標題
 import SectionTitle from "../../../components/SectionTitle";
+// 匯入產品規格表（逐列進場）
+import SpecLedger, { FeatureLedger } from "../../../components/SpecLedger";
+// 匯入適用場所卡片與照片資料
+import PlaceCards from "../../../components/PlaceCards";
+import { placeCards } from "../../../lib/place-cards";
+// 匯入顏色選擇、可變色的產品展示台與型號
+import ColorStage from "../../../components/ColorStage";
+import VariantModel, { VariantName } from "../../../components/VariantModel";
+import VariantPicker from "../../../components/VariantPicker";
+import { stageFamilies, swapImages } from "../../../lib/tints";
+import SwapStage from "../../../components/SwapStage";
+import { beltOptions, variantsOf } from "../../../lib/variants";
+// 匯入手機版底部固定詢價列
+import StickyInquiry from "../../../components/StickyInquiry";
+// 匯入 Email 詢價連結（主旨帶入型號與顏色組合）
+import InquiryLink from "../../../components/InquiryLink";
 // 匯入分類頁文字內容（適用場所、規格選擇）
 import { categoryContent } from "../../../lib/category-content";
 // 匯入未登錄品項的產品頁資料產生器
@@ -23,7 +39,7 @@ import { allItemParams, getCategory, getItem, type CatalogItem } from "../../../
 // 匯入 SEO 工具與公司資料
 import { absoluteUrl, company, ORG_ID, pageMetadata } from "../../../lib/site";
 // 匯入共用樣式
-import { bodyText, cardTitle, container, outlineBtn, pageTop, section } from "../../../lib/ui";
+import { bodyText, container, outlineBtn, pageTop, section } from "../../../lib/ui";
 
 // 只產生已知的品項頁，其他網址回傳 404
 export const dynamicParams = false;
@@ -63,9 +79,11 @@ export async function generateMetadata({ params }: PageProps<"/products/[categor
   return item.detail ? meta : { ...meta, robots: { index: false, follow: true } };
 }
 
-// 詢價按鈕樣式：細框圓角，滑鼠移上變紅框紅字
-const inquiryBtn =
-  "inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-white px-5 text-sm tracking-[0.08em] transition hover:border-brand-deep hover:text-brand-deep";
+// 主要詢價按鈕：紅底白字膠囊（與首頁案例區「預約諮詢」相同）
+const primaryBtn =
+  "inline-flex h-14 items-center rounded-full bg-brand-deep px-8 text-sm tracking-[0.2em] text-white transition hover:bg-brand active:translate-y-px";
+// 次要聯絡方式：文字連結，滑鼠移上變紅
+const quietLink = "inline-flex min-h-11 items-center text-sm underline decoration-line underline-offset-[6px] transition hover:text-brand-deep hover:decoration-brand-deep";
 
 // 單一品項頁
 export default async function ProductPage({ params }: PageProps<"/products/[category]/[slug]">) {
@@ -93,8 +111,27 @@ export default async function ProductPage({ params }: PageProps<"/products/[cate
   // 標題與替代文字
   const title = `${item.model} ${info.name}`;
   const images = detail?.images ?? [item.image];
-  // 詢價信件主旨：帶入型號或品項編號，方便專員辨識
-  const mailSubject = encodeURIComponent(`產品詢價：${item.model}`);
+  // 所屬小系列（伸縮帶欄柱才有，例如「萬向系列」）
+  const group = getCategory(list.slug)?.groups?.find((g) => g.items.some((i) => i.slug === item.slug));
+  // 規格表：型號已是頁面大標，不再重複列出
+  const specs = info.specs.filter((s) => s.label !== "型號");
+  // 同款的所有顏色（伸縮帶欄柱）：有柱身與織帶顏色的品項都顯示顏色選擇
+  const familyVariants = variantsOf(item, list.items);
+  // 可選的織帶顏色：全部單層織帶顏色（雙層織帶款式只列自己的）
+  const belts = familyVariants ? beltOptions(familyVariants) : [];
+  const variants = familyVariants?.map((v) => ({
+    slug: v.item.slug,
+    model: v.item.model,
+    post: v.post,
+    belt: v.belt,
+    href: v.item.href,
+    image: v.item.image,
+  }));
+  // 有去背展示台的款式（萬向系列 RS-A4／A5）：選顏色時產品圖直接變色
+  const paint = !!variants && stageFamilies.test(item.model);
+  // 其他系列有事先算好各色去背圖的款式（塑膠欄柱 PS-03、拒馬 TS-209、海報架 DRP-S41、給皂機架 HDS-A40）：換色時切換去背圖
+  const swap = !!variants && variants.length > 1 && variants.every((v) => v.model in swapImages);
+  const stage = paint || swap;
 
   return (
     <PageShell>
@@ -129,10 +166,13 @@ export default async function ProductPage({ params }: PageProps<"/products/[cate
               { name: item.model, path: item.href },
             ]}
           />
-          <div className="mt-10 grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
-            {/* 產品照：正方形圓角白底；第一張為主圖，其餘為細節圖 */}
-            <div className="grid gap-4">
-              {images.map((src, i) => (
+          <div className="mt-10 grid items-start gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-20">
+            {/* 產品照：正方形圓角白底；第一張為主圖，其餘為細節圖；電腦版捲動時固定在畫面中 */}
+            <div className="grid gap-4 lg:sticky lg:top-48">
+              {/* 有去背展示台的款式：主圖改為可變色的去背產品圖 */}
+              {paint && variants && <ColorStage variants={variants} pageSlug={item.slug} title={title} />}
+              {swap && variants && <SwapStage variants={variants} pageSlug={item.slug} images={swapImages} title={title} />}
+              {(stage ? images.slice(1) : images).map((src, i) => (
                 <div key={src} className="relative aspect-square overflow-hidden rounded-[14px] bg-white lg:rounded-[22px]">
                   <Image
                     src={src}
@@ -147,79 +187,83 @@ export default async function ProductPage({ params }: PageProps<"/products/[cate
             </div>
 
             {/* 產品文字 */}
-            <div>
-              {/* 產品名稱＋型號 */}
-              <SectionTitle as="h1" align="left" title={info.name} desc={`型號 ${item.model}`} />
-              <p className="mt-6 text-sm leading-8 text-pretty text-muted sm:text-base sm:leading-8">{info.description}</p>
+            <div className="lg:pt-4">
+              {/* 產品名稱：型號用特粗英文大字當主角，中文品名在下方 */}
+              <h1>
+                {variants ? (
+                  // 有顏色選擇時：型號跟著選擇的顏色即時更換
+                  <VariantModel
+                    variants={variants}
+                    pageSlug={item.slug}
+                    className="block font-display text-[clamp(48px,6vw,88px)] leading-[0.95] font-black tracking-[-0.02em] text-ink"
+                  />
+                ) : (
+                  <span className="block font-display text-[clamp(48px,6vw,88px)] leading-[0.95] font-black tracking-[-0.02em] text-ink">{item.model}</span>
+                )}
+                {variants ? (
+                  <VariantName variants={variants} pageSlug={item.slug} name={info.name} className="mt-5 block text-[clamp(20px,1.7vw,26px)] leading-[1.45] font-black text-balance" />
+                ) : (
+                  <span className="mt-5 block text-[clamp(20px,1.7vw,26px)] leading-[1.45] font-black text-balance">{info.name}</span>
+                )}
+              </h1>
+              {/* 分類與小系列：紅色分類＋灰色小系列（與案例頁「場域／地點」相同寫法） */}
+              <p className="mt-4 text-base">
+                <Link href={list.listHref} className="text-brand-deep transition hover:text-ink">
+                  {list.name}
+                </Link>
+                {group && (
+                  <>
+                    <span className="mx-2 text-muted" aria-hidden="true">
+                      ／
+                    </span>
+                    <span className="text-muted">{group.name}</span>
+                  </>
+                )}
+              </p>
+              <p className="mt-8 max-w-[30em] text-[clamp(17px,1.25vw,19px)] leading-[1.85] text-pretty">{info.description}</p>
 
-              {/* 規格表 */}
-              <h2 className={`${cardTitle} mt-12`}>產品規格</h2>
-              <dl className="mt-4 border-t border-line">
-                {info.specs.map((s) => (
-                  <div key={s.label} className="flex gap-6 border-b border-line py-3.5 text-sm">
-                    <dt className="w-24 shrink-0 text-muted">{s.label}</dt>
-                    <dd className="min-w-0">{s.value}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p className="mt-3 text-xs leading-6 text-muted">尺寸、重量與其他規格，請洽世紘專員確認。</p>
+              {/* 顏色選擇：按下顏色切換到該顏色的型號與產品照 */}
+              {variants && <VariantPicker variants={variants} belts={belts} pageSlug={item.slug} animate={stage} />}
 
-              {/* 產品特色 */}
-              {info.features.length > 0 && (
-                <>
-                  <h2 className={`${cardTitle} mt-12`}>產品特色</h2>
-                  <ul className="mt-4 space-y-3">
-                    {info.features.map((f) => (
-                      <li key={f} className={`${bodyText} flex gap-3`}>
-                        <span aria-hidden="true" className="mt-3 h-px w-3 shrink-0 bg-brand" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-
-              {/* 詢價：電話、Email（主旨帶入型號）、LINE、聯絡頁 */}
-              <h2 className={`${cardTitle} mt-12`}>詢價與專員規劃</h2>
-              <p className={`${bodyText} mt-3`}>詢價時提供型號「{item.model}」，專員可更快為您確認。</p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a href={company.phoneHref} className={inquiryBtn}>
-                  電話 {company.phone}
-                </a>
-                <a href={`mailto:${company.email}?subject=${mailSubject}`} className={inquiryBtn}>
-                  Email 詢價
+              {/* 詢價：主要按鈕 Email（主旨帶入型號），電話與 LINE 為文字連結 */}
+              <div id="inquiry" className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <InquiryLink email={company.email} model={item.model} variants={variants} pageSlug={item.slug} className={primaryBtn}>
+                  詢價此型號
+                </InquiryLink>
+                <a href={company.phoneHref} className={quietLink}>
+                  {company.phone}
                 </a>
                 {/* LINE 為站外連結，另開新分頁 */}
-                <a href={company.line} target="_blank" rel="noopener noreferrer" className={inquiryBtn}>
-                  LINE 官方帳號
+                <a href={company.line} target="_blank" rel="noopener noreferrer" className={quietLink}>
+                  LINE 詢價
                 </a>
               </div>
-              {/* LINE QR Code：電腦版給手機掃描加好友 */}
-              <div className="mt-5 hidden items-center gap-4 sm:flex">
-                <Image src={company.lineQr} alt="世紘興業 LINE 官方帳號 QR Code" width={540} height={540} className="size-28 shrink-0 rounded-lg border border-line bg-white p-1.5" />
-                <p className={bodyText}>手機掃描 QR Code，加入 LINE 官方帳號詢價</p>
-              </div>
-              {/* 返回列表（詢價方式已在上方，不再放「聯絡我們」按鈕） */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link href={list.listHref} className="inline-flex min-h-11 items-center px-2 text-sm tracking-[0.12em] transition hover:text-brand-deep">
-                  ← 返回{list.name}列表
-                </Link>
-              </div>
+
+              {/* 規格表：織帶章節標籤＋逐列進場 */}
+              <SpecLedger specs={specs} note="尺寸、重量與其他規格，請洽世紘專員確認。" variants={variants} pageSlug={item.slug} />
+
+              {/* 產品特色 */}
+              {info.features.length > 0 && <FeatureLedger features={info.features} />}
+
+              {/* 詢價提醒：LINE QR Code 與完整聯絡方式在頁面底部紅色聯絡區 */}
+              <p className={`${bodyText} mt-12`}>詢價時提供型號「{item.model}」，專員可更快為您確認。</p>
             </div>
           </div>
 
-          {/* 上一項／下一項 */}
-          <nav aria-label="同系列品項" className="mt-16 grid grid-cols-2 gap-4 border-t border-line pt-6 text-sm">
+          {/* 上一項／下一項：直接顯示型號 */}
+          <nav aria-label="同系列品項" className="mt-20 grid grid-cols-2 gap-4 border-t border-line pt-6">
             {prev ? (
-              <Link href={prev.href} className="inline-flex min-h-11 items-center tracking-[0.08em] transition hover:text-brand-deep">
-                ← 上一項
+              <Link href={prev.href} className="group flex min-h-11 flex-col justify-center">
+                <span className="text-xs tracking-[0.12em] text-muted">← 上一項</span>
+                <span className="mt-1 font-display text-lg font-black transition group-hover:text-brand-deep sm:text-xl">{prev.model}</span>
               </Link>
             ) : (
               <span />
             )}
             {next && (
-              <Link href={next.href} className="inline-flex min-h-11 items-center justify-self-end tracking-[0.08em] transition hover:text-brand-deep">
-                下一項 →
+              <Link href={next.href} className="group flex min-h-11 flex-col items-end justify-center justify-self-end text-right">
+                <span className="text-xs tracking-[0.12em] text-muted">下一項 →</span>
+                <span className="mt-1 font-display text-lg font-black transition group-hover:text-brand-deep sm:text-xl">{next.model}</span>
               </Link>
             )}
           </nav>
@@ -229,15 +273,21 @@ export default async function ProductPage({ params }: PageProps<"/products/[cate
       {/* 適用場所 */}
       {places.length > 0 && (
         <section className={section}>
-          <div className={`${container} grid gap-12 lg:grid-cols-2 lg:gap-20`}>
+          <div className={container}>
             <SectionTitle align="left" title="適用場所" />
-            <ol className="border-t border-line">
-              {places.map((p) => (
-                <li key={p} className="flex items-baseline gap-6 border-b border-line py-4">
-                  <span className="text-base tracking-[0.06em]">{p}</span>
-                </li>
-              ))}
-            </ol>
+            {placeCards[list.slug] ? (
+              // 有照片的分類：場所卡片
+              <PlaceCards cards={placeCards[list.slug]} />
+            ) : (
+              // 其他分類：場所清單（滿版多欄）
+              <ul className="mt-10 grid border-t border-line sm:grid-cols-2 sm:gap-x-12 lg:grid-cols-4">
+                {places.map((p) => (
+                  <li key={p} className="border-b border-line py-4 text-base tracking-[0.06em]">
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
       )}
@@ -274,6 +324,9 @@ export default async function ProductPage({ params }: PageProps<"/products/[cate
           </div>
         </section>
       )}
+
+      {/* 手機版底部固定詢價列 */}
+      <StickyInquiry model={item.model} email={company.email} phoneHref={company.phoneHref} variants={variants} pageSlug={item.slug} />
     </PageShell>
   );
 }
