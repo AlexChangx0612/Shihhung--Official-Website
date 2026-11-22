@@ -402,3 +402,56 @@ body {
   }
 }
 
+/* 液態玻璃（手機、平板側欄選單）：半透明白＋背景模糊＋上緣亮邊 */
+/* 玻璃面板：整個側欄 */
+@utility glass-panel {
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.42));
+  -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(1.04);
+  backdrop-filter: blur(28px) saturate(190%) brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 0 0 1px rgb(255 255 255 / 0.5),
+    0 24px 60px -20px rgb(15 15 14 / 0.45);
+}
+/* 玻璃膠囊：一般按鈕 */
+@utility glass-pill {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.34));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(255 255 255 / 0.35),
+    inset 0 0 0 1px rgb(255 255 255 / 0.45),
+    0 4px 14px -6px rgb(15 15 14 / 0.25);
+}
+/* 玻璃膠囊：目前頁面（最亮） */
+@utility glass-pill-on {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.78));
+}
+/* 紅色玻璃膠囊：電話 */
+@utility glass-pill-red {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand-deep) 88%, white),
+    var(--color-brand-deep)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 0 0 1px rgb(255 255 255 / 0.2),
+    0 8px 22px -8px color-mix(in srgb, var(--color-brand-deep) 70%, transparent);
+}
+
+/* 瀏覽器不支援背景模糊，或系統開啟「降低透明度」時：改為不透明面板，確保文字清楚 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-panel {
+    background: var(--color-paper);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel {
+    background: var(--color-paper);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .glass-pill {
+    background: white;
+  }
+}

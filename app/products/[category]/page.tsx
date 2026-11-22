@@ -55,6 +55,46 @@ const heroImages: Record<string, { alt: string; position?: string; mobilePositio
     position: "50% 60%",
     mobilePosition: "75% 50%",
   },
+  "poster-sign-stands": {
+    alt: "挑高大廳的石材接待櫃台上，一座黑框圓盤底座的桌上型雙面海報架，後方地面立著一座銀框可調高度的落地海報架",
+    position: "50% 50%",
+    mobilePosition: "82% 50%",
+  },
+  "bulletin-boards": {
+    alt: "陽光灑落的明亮走廊上，一座附輪移動式佈告欄，綠色布面以黑色支架撐起，上面釘著幾張紙張與便利貼",
+    position: "50% 55%",
+    mobilePosition: "82% 50%",
+  },
+  "digital-signage-lightbox": {
+    alt: "餐廳入口的石材地面上，一座黑色弧形單腳立架、圓盤底座的數位看板，橫式螢幕顯示一道香煎魚排料理，後方是採光明亮的用餐區",
+    position: "50% 50%",
+    mobilePosition: "75% 50%",
+  },
+  "waste-recycling": {
+    alt: "辦公大樓外的石材廣場上，一個紅色與一個綠色帶輪大型回收桶並排擺放，後方是玻璃帷幕與植栽",
+    position: "50% 55%",
+    mobilePosition: "76% 50%",
+  },
+  "cleaning-hygiene": {
+    alt: "明亮的大樓入口大廳，一座黑色立柱圓盤底座的立式感應給皂機立在自動門前，門外是綠意",
+    position: "50% 50%",
+    mobilePosition: "75% 50%",
+  },
+  "umbrella-stands": {
+    alt: "雨天的大樓入口內側，一座黑色 A 字形摺疊傘架插著三把收好的長柄雨傘，窗外下著雨",
+    position: "50% 50%",
+    mobilePosition: "80% 50%",
+  },
+  "carts-tool-carts": {
+    alt: "灰色地坪的設備間裡，一台紅黑配色的多層工具車，上層有分格零件盒、側邊有掛筒、底部是大托盤與工業輪",
+    position: "50% 55%",
+    mobilePosition: "80% 50%",
+  },
+  "key-boxes": {
+    alt: "溫暖燈光下的牆面上，一個門板打開的淺藍灰色鋼板鑰匙箱，內部掛勾掛著鑰匙與彩色號碼牌",
+    position: "50% 50%",
+    mobilePosition: "78% 50%",
+  },
 };
 
 // 只產生已知的分類頁，其他網址回傳 404

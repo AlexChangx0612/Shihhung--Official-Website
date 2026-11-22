@@ -45,12 +45,12 @@ const navRight = [
 // 合併左右兩組，作為抽屜選單的連結
 const pages = [...navLeft, ...navRight];
 
-// 按鈕字級：一般 24px（選單、聯絡）；1536 起左右八個按鈕並排 21px，1900px 以上 22.5px
+// 按鈕字級（1024 起左右八個按鈕並排）：1024px 14px → 1280px 17px → 1536px 21px → 1900px 22.5px
 // 按鈕共用樣式：不換行、滑鼠移上變紅字
 const navLink =
-  "py-2 text-xl tracking-[0.15em] whitespace-nowrap transition hover:text-brand-deep 2xl:text-[21px] 2xl:tracking-[0.1em] 3xl:text-[22.5px]";
-// 按鈕群組樣式：1536px 以下隱藏；以上橫向排列，間距 16px，1900px 以上間距 30px
-const navGroup = "hidden items-center gap-4 2xl:flex 3xl:gap-[30px]";
+  "py-2 text-[14px] tracking-[0.02em] whitespace-nowrap transition hover:text-brand-deep xl:text-[17px] xl:tracking-[0.06em] 2xl:text-[21px] 2xl:tracking-[0.08em] 3xl:text-[22.5px] 3xl:tracking-[0.1em]";
+// 按鈕群組樣式：1024px 以下隱藏；以上橫向排列，間距 10px → 1280px 16px → 1900px 30px
+const navGroup = "hidden items-center gap-2.5 lg:flex xl:gap-4 3xl:gap-[30px]";
 
 // 電話圖示（14px）
 function PhoneIcon() {
@@ -120,7 +120,7 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
     // 空標籤：同時回傳多個元素
     <>
       {/* 頁首：浮動白色卡片（下緣圓角、細框＋陰影），固定在畫面頂端；載入時從上方滑入 */}
-      <header className="fixed inset-x-2 top-0 z-40 rounded-b-[18px] bg-white shadow-[0_0_0_1px_rgba(15,15,14,.08),0_16px_36px_-24px_rgba(15,15,14,.3)] motion-safe:animate-[hdr-in_.95s_cubic-bezier(.16,1,.3,1)_both] sm:inset-x-6 lg:inset-x-10 lg:rounded-b-[22px] 2xl:inset-x-4 3xl:inset-x-10">
+      <header className="fixed inset-x-2 top-0 z-40 rounded-b-[18px] bg-white shadow-[0_0_0_1px_rgba(15,15,14,.08),0_16px_36px_-24px_rgba(15,15,14,.3)] motion-safe:animate-[hdr-in_.95s_cubic-bezier(.16,1,.3,1)_both] sm:inset-x-6 lg:inset-x-3 xl:inset-x-4 lg:rounded-b-[22px] 3xl:inset-x-10">
         {/* 資訊列（電腦版）：電話、Email、營業時間；往下捲動後收起，讓出閱讀空間 */}
         <div
           className={`hidden items-center gap-6 overflow-hidden border-b px-6 text-xs text-muted transition-[height,opacity,visibility] duration-300 lg:flex ${
@@ -148,9 +148,9 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
         {/* 主列：三欄格線（左欄、LOGO、右欄）；高度手機 80px → 平板 96px → 電腦 144px（捲動後縮為 80px） */}
         {/* 左右欄等寬，LOGO 正中央；768px 以下放大鏡移到左欄（☰＋放大鏡 ↔ 聯絡我們），兩邊寬度相近才放得下 */}
         {/* 360px 以下的極小螢幕連等寬都放不下，改為左右欄依內容寬度 */}
-        <div className={`grid h-20 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-0 px-2.5 min-[360px]:gap-x-1 min-[360px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-x-2 transition-[height] duration-300 sm:h-24 sm:px-6 ${scrolled ? "lg:h-20" : "lg:h-36"} lg:px-8 2xl:gap-x-8 2xl:px-4 3xl:px-8`}>
+        <div className={`grid h-20 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-0 px-2.5 min-[360px]:gap-x-1 min-[360px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-x-2 transition-[height] duration-300 sm:h-24 sm:px-6 ${scrolled ? "lg:h-20" : "lg:h-36"} lg:gap-x-3 lg:px-3 xl:gap-x-6 xl:px-4 3xl:gap-x-8 3xl:px-8`}>
           {/* 左欄：較小螢幕靠左；大螢幕靠右（貼近 LOGO） */}
-          <div className="flex items-center gap-0 justify-self-start min-[360px]:gap-1 2xl:gap-8 2xl:justify-self-end">
+          <div className="flex items-center gap-0 justify-self-start min-[360px]:gap-1 lg:justify-self-end">
             {/* ☰ 選單按鈕：大螢幕隱藏 */}
             <button
               // 一般按鈕
@@ -162,7 +162,7 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
               // 告訴輔助工具抽屜目前是否展開
               aria-expanded={open}
               // 圖示與文字橫向排列，24px 字；點擊範圍至少 44×44px
-              className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 text-[15px] tracking-[0.05em] whitespace-nowrap sm:justify-start sm:gap-3 sm:text-xl sm:tracking-[0.15em] 2xl:hidden"
+              className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 text-[15px] tracking-[0.05em] whitespace-nowrap sm:justify-start sm:gap-3 sm:text-xl sm:tracking-[0.15em] lg:hidden"
             >
               {/* 兩條橫線的選單圖示：手機 20px 寬，平板以上 30px */}
               <svg viewBox="0 0 20 10" aria-hidden="true" className="h-2.5 w-5 sm:h-[15px] sm:w-[30px]">
@@ -180,7 +180,7 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
 
           {/* 品牌：Shung 標誌 ｜ 公司名稱與標語 */}
           {/* 點擊回到首頁 */}
-          <Link href="/" aria-label="世紘興業 回到首頁" className="flex min-h-11 items-center gap-2 sm:gap-4">
+          <Link href="/" aria-label="世紘興業 回到首頁" className="flex min-h-11 items-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
             {/* 紅色 Shung 標誌 */}
             <Image
               // 圖片路徑
@@ -193,26 +193,26 @@ export default function SiteHeader({ categories }: { categories: CategoryLink[] 
               height={139}
               // 立即載入（第一眼就看得到）
               loading="eager"
-              // 高度：375px 以下 24px → 手機 28px → 平板 48px → 電腦 56px，寬度等比例
-              className="h-6 w-auto min-[375px]:h-7 sm:h-12 lg:h-14"
+              // 高度：375px 以下 24px → 手機 28px → 平板 48px → 1024px 40px（讓出空間給八個按鈕）→ 1280px 48px → 1536px 56px，寬度等比例
+              className="h-6 w-auto min-[375px]:h-7 sm:h-12 lg:h-10 xl:h-12 2xl:h-14"
             />
             {/* LOGO 與文字之間的紅色直線 */}
-            <span aria-hidden="true" className="h-6 w-px bg-brand/40 min-[375px]:h-7 sm:h-11 lg:h-12" />
+            <span aria-hidden="true" className="h-6 w-px bg-brand/40 min-[375px]:h-7 sm:h-11 lg:h-9 xl:h-11 2xl:h-12" />
             {/* 公司名稱與標語（不換行） */}
             <span className="leading-none whitespace-nowrap">
-              {/* 公司名稱：深品牌紅，手機 15px → 平板 28px → 電腦 34px */}
-              <span className="block text-[15px] tracking-[0.15em] text-brand-deep sm:text-2xl sm:tracking-[0.3em] lg:text-3xl">世紘興業</span>
-              {/* 標語：灰字，手機 9px → 平板 14px → 電腦 16px；375px 以下的小螢幕空間不足，隱藏 */}
-              <span className="mt-1.5 hidden text-[9px] min-[375px]:block tracking-[0.08em] text-muted sm:mt-2 sm:text-xs sm:tracking-[0.28em] lg:text-sm">公共空間設備專家</span>
+              {/* 公司名稱：深品牌紅，手機 15px → 平板 28px → 1024px 24px → 1280px 28px → 1536px 34px */}
+              <span className="block text-[15px] tracking-[0.15em] text-brand-deep sm:text-2xl sm:tracking-[0.3em] lg:text-xl lg:tracking-[0.15em] xl:text-2xl xl:tracking-[0.2em] 2xl:text-3xl 2xl:tracking-[0.3em]">世紘興業</span>
+              {/* 標語：灰字，手機 9px → 平板 14px → 1536px 16px；1024–1535px 縮小字距；375px 以下的小螢幕空間不足，隱藏 */}
+              <span className="mt-1.5 hidden text-[9px] min-[375px]:block tracking-[0.08em] text-muted sm:mt-2 sm:text-xs sm:tracking-[0.28em] lg:tracking-[0.1em] xl:tracking-[0.2em] 2xl:text-sm 2xl:tracking-[0.28em]">公共空間設備專家</span>
             </span>
           </Link>
 
           {/* 右欄：較小螢幕靠右；大螢幕靠左（貼近 LOGO）；最右側為放大鏡 */}
-          <div className="flex items-center justify-self-end sm:gap-3 2xl:justify-self-start 2xl:gap-5 3xl:gap-8">
+          <div className="flex items-center justify-self-end sm:gap-3 lg:justify-self-start xl:gap-4 2xl:gap-5 3xl:gap-8">
             {/* 「聯絡我們」→ 聯絡我們頁面（較小螢幕；手機 15px 字，平板以上 24px） */}
             <Link
               href="/contact"
-              className="flex min-h-11 items-center text-[15px] tracking-[0.05em] whitespace-nowrap transition hover:text-brand-deep sm:text-xl sm:tracking-[0.15em] 2xl:hidden"
+              className="flex min-h-11 items-center text-[15px] tracking-[0.05em] whitespace-nowrap transition hover:text-brand-deep sm:text-xl sm:tracking-[0.15em] lg:hidden"
             >
               聯絡我們
             </Link>
