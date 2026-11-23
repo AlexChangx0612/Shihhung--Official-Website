@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       { source: "/products/retractable-belt-stanchions/:code(new-046-001|new-047-001)", destination: "/products/poster-sign-stands/:code", permanent: true },
       // RF-19BU、RF-19BU-FD 從數位看板・燈箱移到展覽佈展欄柱
       { source: "/products/digital-signage-lightbox/:code(20240729-007-001|20240729-008-001)", destination: "/products/exhibition-stanchions/:code", permanent: true },
+      // TK 不鏽鋼信箱、意見箱、巡邏箱從推車・工具車移到鑰匙箱・信箱
+      { source: "/products/carts-tool-carts/:code(011-008-003-001|011-008-004-001|011-008-005-001|011-008-006-001|011-008-007-001)", destination: "/products/key-boxes/:code", permanent: true },
       // 「室內外欄柱」更名為「展覽佈展欄柱」：舊分類與產品網址導到新網址
       { source: "/products/indoor-outdoor-stanchions/:path*", destination: "/products/exhibition-stanchions/:path*", permanent: true },
     ];

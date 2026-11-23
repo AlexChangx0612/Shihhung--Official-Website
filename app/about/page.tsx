@@ -27,7 +27,7 @@ import { container, textLink } from "../lib/ui";
 const otherSeries = [
   { slug: "digital-signage-lightbox", name: "數位看板・燈箱" },
   { slug: "bulletin-boards", name: "佈告欄" },
-  { slug: "waste-recycling", name: "垃圾桶・資源回收" },
+  { slug: "waste-recycling", name: "垃圾桶・資源回收桶" },
   { slug: "rope-stanchions", name: "迎賓欄柱" },
   { slug: "plastic-stanchions", name: "塑膠欄柱" },
 ];

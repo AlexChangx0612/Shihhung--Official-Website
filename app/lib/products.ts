@@ -67,6 +67,12 @@ export type CategoryGroup = {
 // 小系列定義：match 判斷品項是否屬於此小系列（各小系列的條件互不重疊）；cover 為代表圖的品項編號，省略時用第一個品項
 type GroupDef = Omit<CategoryGroup, "items" | "cover"> & { match: (item: CatalogItem) => boolean; cover?: string };
 
+// 小系列條件：品項編號（產品照檔名）以任一開頭文字開頭
+const byCode = (...prefixes: string[]) => (item: CatalogItem) => prefixes.some((p) => item.code.startsWith(p));
+
+// TK 不鏽鋼信箱（小、中、大）、意見箱、巡邏箱的檔名開頭：原屬推車・工具車，歸入鑰匙箱・信箱
+const MAILBOX_CODES = ["011-008-003-", "011-008-004-", "011-008-005-", "011-008-006-", "011-008-007-"];
+
 // 依照片實際內容分類；prefixes 比對 public/images 底下的檔名開頭，exclude 為符合 prefixes 但要排除的檔名開頭
 // placeAfter 調整個別品項的位置：品項編號 → 要排在哪個品項編號後面（依序套用；未列出的品項維持檔名順序）
 const categoryDefs: { id: string; slug: string; en: string; name: string; desc: string; prefixes: string[]; exclude?: string[]; placeAfter?: Record<string, string>; groups?: GroupDef[] }[] = [
@@ -134,6 +140,38 @@ const categoryDefs: { id: string; slug: string; en: string; name: string; desc: 
     name: "迎賓欄柱",
     desc: "不鏽鋼迎賓欄柱，有圓球頭、皇冠頭、平蓋頭等柱頭造型，搭配絨布繩，典雅大方。",
     prefixes: ["003-", "004-"],
+    // 依型號系列分成四個小系列（id 不可與伸縮帶欄柱的 accessories 等重複，產品頁說明依 id 查詢）
+    groups: [
+      {
+        id: "rope-sw",
+        en: "SW SERIES",
+        name: "迎賓欄柱",
+        desc: "SW 系列，有圓球頭、皇冠頭、平蓋頭三種柱頭造型，總高 860～997mm，搭配迎賓絨繩使用。",
+        // SW-R1S(A)、SW-R2G(A) 等柱身型號（絨繩 SW-R150 等不含括號）
+        match: (i) => /^SW-R\d[SG]\(/.test(i.model),
+      },
+      {
+        id: "rope-cb",
+        en: "CB SERIES",
+        name: "活動隔屏欄柱",
+        desc: "CB 系列，有圓球頭、皇冠頭、平蓋頭三種柱頭造型，總高 990～1105mm，可搭配圍幕桿與彈力勾組成活動隔屏。",
+        match: (i) => i.model.startsWith("CB-"),
+      },
+      {
+        id: "rope-cords",
+        en: "ROPES",
+        name: "迎賓絨繩",
+        desc: "繩長 150cm、180cm 的迎賓絨繩，另有三色絨繩。",
+        match: (i) => /^SW-(R1[58]0|T150)/.test(i.model),
+      },
+      {
+        id: "rope-accessories",
+        en: "ACCESSORIES",
+        name: "欄柱配件",
+        desc: "壁鉤、彈力勾與 140cm、170cm 圍幕桿，搭配迎賓絨繩或活動隔屏使用。",
+        match: (i) => /^(RC|EH|BS)-/.test(i.model),
+      },
+    ],
   },
   // 分類 3：展覽佈展欄柱
   {
@@ -193,14 +231,59 @@ const categoryDefs: { id: string; slug: string; en: string; name: string; desc: 
     // RF-19BU、RF-19BU-FD 欄柱歸入展覽佈展欄柱
     exclude: ["20240729-007-", "20240729-008-"],
   },
-  // 分類 9：垃圾桶・資源回收
+  // 分類 9：垃圾桶・資源回收桶
   {
     id: "trash",
     slug: "waste-recycling",
     en: "WASTE & RECYCLING",
-    name: "垃圾桶・資源回收",
+    name: "垃圾桶・資源回收桶",
     desc: "不鏽鋼垃圾桶、煙灰桶、分類回收桶與分類貼紙。",
     prefixes: ["011-002-", "011-004-", "011-005-", "011-006-", "011-009-", "011-20221125-"],
+    // 依檔名編號（即產品照的系列）分成六個小系列
+    groups: [
+      {
+        id: "waste-wheelie",
+        en: "WHEELIE BINS",
+        name: "帶輪回收桶",
+        desc: "RB、GB、ERB 系列，多數通過 EN840 認證，最大載量 48～510kg，部分為腳踏式；另有 50、100 公升款。",
+        match: byCode("011-002-"),
+      },
+      {
+        id: "waste-stainless",
+        en: "STAINLESS BINS",
+        name: "不鏽鋼垃圾桶",
+        desc: "ST1、TH 系列，有推板式、開放式、頂蓋搖擺板式與搖擺式投入口，多數附不鏽鋼內桶；另有廣告型與木紋款。",
+        match: byCode("011-006-001-"),
+      },
+      {
+        id: "waste-sorting",
+        en: "SORTING BINS",
+        name: "分類回收桶",
+        desc: "二分類、三分類與四分類回收桶，有推板式、開放式與搖擺式投入口；另有折疊式分類回收架。",
+        match: byCode("011-006-002-", "011-006-003-", "011-006-004-", "011-20221125-"),
+      },
+      {
+        id: "waste-ashtray",
+        en: "ASHTRAYS",
+        name: "煙灰缸・煙灰缸垃圾桶",
+        desc: "不鏽鋼 #304 立式煙灰缸與上方附煙灰缸的垃圾桶，部分附內桶。",
+        match: byCode("011-004-"),
+      },
+      {
+        id: "waste-small",
+        en: "SMALL BINS",
+        name: "小型垃圾桶",
+        desc: "PT、T、SW-M、TR 系列，有不鏽鋼 #304 拋光與鋼網、鋼板黑色烤漆款。",
+        match: byCode("011-005-"),
+      },
+      {
+        id: "waste-stickers",
+        en: "STICKERS",
+        name: "分類貼紙",
+        desc: "一般垃圾、塑膠類、寶特瓶、玻璃類、紙類等 9 種分類貼紙，尺寸 26×36cm。",
+        match: byCode("011-009-"),
+      },
+    ],
   },
   // 分類 10：清潔衛生
   {
@@ -228,15 +311,93 @@ const categoryDefs: { id: string; slug: string; en: string; name: string; desc: 
     name: "推車・工具車",
     desc: "房務整備車、手推車、工具車與不鏽鋼工作桌。",
     prefixes: ["013-", "011-007-", "011-008-"],
+    // TK 信箱、意見箱、巡邏箱歸入鑰匙箱・信箱
+    exclude: MAILBOX_CODES,
+    // 依檔名編號分成七個小系列；工作推車依層數與全配型再拆成三組
+    groups: [
+      {
+        id: "carts-2tier",
+        en: "2-TIER CARTS",
+        name: "二層工作推車",
+        desc: "單把手、雙把手、圍邊型與側背圍邊型二層工作推車，有黑、白、藍、綠、紅、黃等色，部分附置物網籃。",
+        match: byCode("013-005-"),
+      },
+      {
+        id: "carts-3tier",
+        en: "3-TIER CARTS",
+        name: "三層工作推車",
+        desc: "單把手、雙把手、圍邊型與側背圍邊型三層工作推車，有黑、白、藍、綠、紅、黃等色。",
+        match: (i) => i.code.startsWith("013-006-") && !i.spec?.startsWith("全配型"),
+      },
+      {
+        id: "carts-full",
+        en: "FULLY EQUIPPED",
+        name: "全配型工作推車",
+        desc: "工作推車搭配收納盆與掛桶的全配組合，車長 100～135.4cm。",
+        match: (i) => i.spec?.startsWith("全配型") ?? false,
+      },
+      {
+        id: "carts-housekeeping",
+        en: "HOUSEKEEPING",
+        name: "房務整備車・汙衣推車",
+        desc: "房務整備車、圍欄整備車與帆布汙衣推車。",
+        match: byCode("013-001-", "013-002-", "013-008-"),
+      },
+      {
+        id: "carts-hand",
+        en: "HAND TRUCKS",
+        name: "手推車・平台車",
+        desc: "灰、綠、黃色折疊式手推車與鋁合金平台車。",
+        match: byCode("013-004-"),
+      },
+      {
+        id: "carts-tool",
+        en: "TOOL CARTS",
+        name: "工具車・不鏽鋼推車",
+        desc: "鐵製工具車，以及不鏽鋼 304 工具車、層板推車與工作桌。",
+        match: byCode("013-003-", "011-007-", "011-008-"),
+      },
+      {
+        id: "carts-accessories",
+        en: "ACCESSORIES",
+        name: "推車配件",
+        desc: "中掛桶、加蓋中掛桶、收納盒與夾扣，搭配工作推車使用。",
+        match: byCode("013-007-"),
+      },
+    ],
   },
-  // 分類 13：鑰匙箱
+  // 分類 13：鑰匙箱・信箱
   {
     id: "key",
     slug: "key-boxes",
-    en: "KEY BOXES",
-    name: "鑰匙箱",
-    desc: "防鏽鋼板鑰匙箱，20～240 支容量。",
-    prefixes: ["012-008-", "012-009-", "012-01"],
+    en: "KEY BOXES & MAILBOXES",
+    name: "鑰匙箱・信箱",
+    desc: "防鏽鋼板鑰匙箱（20～240 支容量），以及不鏽鋼 304 信箱、意見箱與巡邏箱。",
+    prefixes: ["012-008-", "012-009-", "012-01", ...MAILBOX_CODES],
+    // 檔名 011 開頭的信箱排在鑰匙箱後面（依序：信箱小、中、大，意見箱，巡邏箱）
+    placeAfter: {
+      "011-008-004-001": "012-015-001",
+      "011-008-005-001": "011-008-004-001",
+      "011-008-006-001": "011-008-005-001",
+      "011-008-003-001": "011-008-006-001",
+      "011-008-007-001": "011-008-003-001",
+    },
+    groups: [
+      {
+        id: "key-cabinets",
+        en: "KEY BOXES",
+        name: "鑰匙箱",
+        desc: "防鏽鋼板鑰匙箱，總容量 20～240 支。",
+        match: byCode("012-"),
+      },
+      {
+        id: "mailboxes",
+        en: "MAILBOXES",
+        name: "信箱・意見箱",
+        desc: "不鏽鋼 304 信箱（小、中、大）、意見箱與巡邏箱。",
+        match: byCode(...MAILBOX_CODES),
+      },
+    ],
   },
 ];
 

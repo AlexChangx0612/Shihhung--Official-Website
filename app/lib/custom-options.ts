@@ -42,7 +42,7 @@ export const customGroups: { name: string; items: CustomOption[] }[] = [
   {
     name: "空間設備類",
     items: [
-      { slug: "waste-recycling", name: "垃圾桶・資源回收", print: ["桶身（標誌、分類文字）"], color: ["桶身"], cases: [] },
+      { slug: "waste-recycling", name: "垃圾桶・資源回收桶", print: ["桶身（標誌、分類文字）"], color: ["桶身"], cases: [] },
       { slug: "umbrella-stands", name: "傘架・傘桶", print: ["桶身或側板"], color: ["烤漆"], cases: ["xiaomi-store"] },
     ],
   },

@@ -10,8 +10,8 @@ import { notFound } from "next/navigation";
 import { PhotoHero } from "../../components/AboutBlocks";
 // 匯入麵包屑
 import Breadcrumbs from "../../components/Breadcrumbs";
-// 匯入常見問題清單
-import FaqList from "../../components/FaqList";
+// 匯入常見問題型別
+import type { Faq } from "../../components/FaqList";
 // 匯入結構化資料元件
 import JsonLd from "../../components/JsonLd";
 // 匯入內頁外框
@@ -20,12 +20,14 @@ import PageShell from "../../components/PageShell";
 import SectionTitle from "../../components/SectionTitle";
 // 匯入分類頁文字內容
 import { categoryContent } from "../../lib/category-content";
+// 匯入適用場所照片
+import { placeCards, type PlaceCard } from "../../lib/place-cards";
 // 匯入產品目錄
 import { getCatalog, getCategory, type CatalogItem } from "../../lib/products";
 // 匯入 SEO 工具
 import { absoluteUrl, faqJsonLd, ORG_ID, pageMetadata } from "../../lib/site";
 // 匯入共用樣式
-import { bodyText, card, cardHover, cardTitle, container, outlineBtn, pageTop, section } from "../../lib/ui";
+import { card, cardHover, container, outlineBtn, pageTop, section } from "../../lib/ui";
 
 // 系列頁首照片（public/product-heroes）；有照片的系列改用滿版照片頁首，其餘維持去背圖版型
 // position／mobilePosition 為電腦版／手機版的裁切對齊位置
@@ -71,7 +73,7 @@ const heroImages: Record<string, { alt: string; position?: string; mobilePositio
     mobilePosition: "75% 50%",
   },
   "waste-recycling": {
-    alt: "辦公大樓外的石材廣場上，一個紅色與一個綠色帶輪大型回收桶並排擺放，後方是玻璃帷幕與植栽",
+    alt: "辦公大樓雨遮下的石材廊道旁，沿牆排列著紅綠帶輪回收桶、掛著半透明垃圾袋的彩色蓋折疊分類回收架、不鏽鋼二分類與四分類回收桶、煙灰缸垃圾桶、腳踏垃圾桶與立式煙灰缸",
     position: "50% 55%",
     mobilePosition: "76% 50%",
   },
@@ -86,12 +88,12 @@ const heroImages: Record<string, { alt: string; position?: string; mobilePositio
     mobilePosition: "80% 50%",
   },
   "carts-tool-carts": {
-    alt: "灰色地坪的設備間裡，一台紅黑配色的多層工具車，上層有分格零件盒、側邊有掛筒、底部是大托盤與工業輪",
+    alt: "高窗採光的淺灰地坪後場設備間裡，前方是紅黑鐵製工具車與折疊式手推車，周圍停放紅色三層工作推車、黑色房務整備車、帆布汙衣推車、不鏽鋼抽屜工具車、掛桶全配型工作推車與不鏽鋼工作桌",
     position: "50% 55%",
-    mobilePosition: "80% 50%",
+    mobilePosition: "72% 50%",
   },
   "key-boxes": {
-    alt: "溫暖燈光下的牆面上，一個門板打開的淺藍灰色鋼板鑰匙箱，內部掛勾掛著鑰匙與彩色號碼牌",
+    alt: "服務櫃台後方陽光灑落的牆面上，錯落掛著門板打開、掛滿鑰匙與彩色號碼牌的淺藍灰色鑰匙箱，以及不鏽鋼巡邏箱、信箱與意見箱；木質櫃台上放著筆筒、小盆栽與一疊信封",
     position: "50% 50%",
     mobilePosition: "78% 50%",
   },
@@ -114,18 +116,58 @@ export async function generateMetadata({ params }: PageProps<"/products/[categor
   return pageMetadata({ title: content.title, description: content.description, path: `/products/${cat.slug}`, image: cat.images[0] });
 }
 
-// 三欄說明的單一欄：小標題＋編號清單
-function InfoColumn({ title, items }: { title: string; items: string[] }) {
+// 頁尾前的小段落：細線上緣，標題在上、內容滿版
+function GuidePart({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
+  return (
+    <div id={id} className="scroll-mt-24 border-t border-ink/15 pt-8 pb-20 sm:scroll-mt-28 sm:pt-10 sm:pb-28">
+      <h2 className="text-2xl font-bold text-ink sm:text-[32px]">{title}</h2>
+      <div className="mt-8 sm:mt-10">{children}</div>
+    </div>
+  );
+}
+
+// 適用場所：照片＋短標題；手機與平板橫向滑動，電腦每張固定五分之一寬並置中（3、4、5 張都置中）
+function PlaceStrip({ cards }: { cards: PlaceCard[] }) {
+  return (
+    <ul className="-mx-5 flex snap-x scroll-px-5 gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:-mx-8 sm:scroll-px-8 sm:px-8 lg:mx-0 lg:justify-center lg:gap-5 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
+      {cards.map((c) => (
+        <li key={c.title} className="w-[60%] flex-none snap-start sm:w-[32%] lg:w-[calc((100%-5rem)/5)]">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[14px] bg-white lg:rounded-[18px]">
+            <Image src={c.image} alt={c.alt} fill sizes="(min-width: 1440px) 270px, (min-width: 1024px) 19vw, (min-width: 640px) 32vw, 60vw" style={{ objectPosition: c.position }} className="object-cover" />
+          </div>
+          <p className="mt-4 text-base font-bold text-ink sm:text-lg">{c.title}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// 常見問題：細線分隔的展開列（原生 details，不需 JavaScript；收合時答案仍在 HTML 中，搜尋引擎可讀取）
+function FaqLines({ faqs }: { faqs: Faq[] }) {
   return (
     <div>
-      <h2 className={cardTitle}>{title}</h2>
-      <ol className="mt-6 space-y-4">
-        {items.map((item) => (
-          <li key={item} className="flex gap-4">
-            <span className={bodyText}>{item}</span>
-          </li>
-        ))}
-      </ol>
+      {faqs.map((f) => (
+        <details key={f.q} className="group border-b border-ink/10 first:-mt-5 last:border-0">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 py-5 text-base font-bold text-ink transition-colors hover:text-brand-deep sm:py-6 sm:text-xl [&::-webkit-details-marker]:hidden">
+            {/* 最後兩個字綁在一起，避免手機上「？」單獨掉到下一行 */}
+            <span>
+              {f.q.slice(0, -2)}
+              <span className="whitespace-nowrap">{f.q.slice(-2)}</span>
+            </span>
+            <span aria-hidden="true" className="text-2xl leading-none font-normal text-brand-deep transition-transform group-open:rotate-45">
+              +
+            </span>
+          </summary>
+          <div className="max-w-3xl pb-6 text-base leading-8 text-pretty text-ink/80">
+            <p>{f.a}</p>
+            {f.link && (
+              <Link href={f.link.href} className="mt-2 inline-flex min-h-11 items-center text-brand-deep underline underline-offset-4 transition-opacity hover:opacity-70">
+                {f.link.label}
+              </Link>
+            )}
+          </div>
+        </details>
+      ))}
     </div>
   );
 }
@@ -174,6 +216,8 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
   ];
   // 頁首照片（沒有就用去背圖版型）
   const hero = heroImages[cat.slug];
+  // 適用場所照片
+  const places = placeCards[cat.slug];
   // 標題拆成主標與副標（以「｜」分隔）
   const [titleMain, titleSub] = content.h1.split("｜");
   // 照片頁首的說明：手機只顯示前兩句（避免橫幅被撐高、文字壓到照片主體），其餘句子平板以上才顯示
@@ -203,7 +247,6 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
         <div className="pb-20 sm:pb-28">
           <PhotoHero
             crumbs={crumbs}
-            eyebrow={cat.en}
             title={
               <>
                 {titleMain}
@@ -257,22 +300,20 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
           <section id="products" className={section}>
             <div className={container}>
               <SectionTitle title={`${cat.groups.length} 大系列，${cat.items.length} 款產品`} desc={`${cat.desc}選擇系列快速查看。`} />
-              {/* 小系列導覽卡片：手機與平板為可橫向滑動的一排，電腦 5 欄一排；點擊跳到該系列 */}
-              <ul className="-mx-5 mt-14 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pt-1 pb-3 [scrollbar-width:none] sm:-mx-8 sm:scroll-px-8 sm:gap-5 sm:px-8 lg:mx-0 lg:grid lg:grid-cols-5 lg:overflow-visible lg:p-0 [&::-webkit-scrollbar]:hidden">
+              {/* 小系列導覽卡片：手機與平板為可橫向滑動的一排，電腦每張五分之一寬、一排最多 5 張，不滿一排時置中；點擊跳到該系列 */}
+              <ul className="-mx-5 mt-14 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pt-1 pb-3 [scrollbar-width:none] sm:-mx-8 sm:scroll-px-8 sm:gap-5 sm:px-8 lg:mx-0 lg:flex-wrap lg:justify-center lg:overflow-visible lg:p-0 [&::-webkit-scrollbar]:hidden">
                 {cat.groups.map((g) => (
-                  <li key={g.id} className="w-[44%] shrink-0 snap-start sm:w-[30%] lg:w-auto">
+                  <li key={g.id} className="w-[44%] shrink-0 snap-start sm:w-[30%] lg:w-[calc((100%-5rem)/5)]">
                     <a href={`#${g.id}`} className={`group flex h-full flex-col p-1.5 sm:p-2 ${card} ${cardHover}`}>
                       <div className="relative aspect-square overflow-hidden rounded-[10px] bg-paper lg:rounded-[12px]">
                         <Image src={g.cover} alt={`世紘${g.name}`} fill sizes="(min-width: 1024px) 270px, (min-width: 640px) 30vw, 44vw" className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]" />
                       </div>
                       <div className="flex flex-1 items-end gap-3 px-2 pt-3 pb-1.5 sm:px-3 sm:pt-4 sm:pb-2">
                         <div className="min-w-0 flex-1">
-                          {/* 英文小標 */}
-                          <p className="text-[11px] tracking-[0.2em] whitespace-nowrap text-brand-deep sm:text-xs lg:tracking-[0.12em] xl:tracking-[0.2em]">{g.en}</p>
-                          <p className="mt-1 text-sm tracking-[0.06em] whitespace-nowrap text-ink sm:text-lg lg:text-base xl:text-lg">{g.name}</p>
+                          <p className="text-sm tracking-[0.06em] text-balance text-ink sm:text-lg lg:text-base xl:text-lg">{g.name}</p>
                           <p className="mt-0.5 text-xs text-muted sm:text-sm">{g.items.length} 款</p>
                         </div>
-                        {/* 向下箭頭：滑鼠移上往下移（1024～1279px 卡片較窄，隱藏以免擠到英文小標） */}
+                        {/* 向下箭頭：滑鼠移上往下移（1024～1279px 卡片較窄，隱藏以免擠到系列名稱） */}
                         <span aria-hidden="true" className="hidden pb-0.5 text-lg text-brand-deep transition group-hover:translate-y-0.5 sm:inline lg:hidden xl:inline">
                           ↓
                         </span>
@@ -303,8 +344,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
             <section key={g.id} id={g.id} className={`scroll-mt-40 py-16 sm:scroll-mt-44 sm:py-20 ${i > 0 ? "border-t border-line" : ""}`}>
               <div className={`${container} grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-14 2xl:grid-cols-[300px_minmax(0,1fr)]`}>
                 <div className="lg:sticky lg:top-48 lg:self-start">
-                  <p className="text-xs tracking-[0.35em] text-brand-deep">{g.en}</p>
-                  <h2 className="mt-4 text-2xl tracking-[0.12em] text-brand sm:text-3xl">{g.name}</h2>
+                  <h2 className="text-2xl tracking-[0.12em] text-brand sm:text-3xl">{g.name}</h2>
                   <p className="mt-4 text-sm leading-7 text-pretty text-muted">{g.desc}</p>
                   <p className="mt-6 border-t border-line pt-4 text-xs tracking-[0.25em] text-muted">共 {g.items.length} 款</p>
                 </div>
@@ -325,20 +365,17 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
         </section>
       )}
 
-      {/* 適合場所、規格選擇、如何選擇：手機上下排列，電腦三欄 */}
-      <section className={section}>
-        <div className={`${container} grid gap-14 md:grid-cols-3 md:gap-10`}>
-          <InfoColumn title="這類產品適合哪些場所？" items={content.places} />
-          <InfoColumn title="這類產品有哪些規格或選擇？" items={content.options} />
-          <InfoColumn title="如何選擇適合的產品？" items={content.choose} />
-        </div>
-      </section>
-
-      {/* 常見問題 */}
-      <section id="faq" className={section}>
-        <div className={`${container} grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-20`}>
-          <SectionTitle align="left" title="常見問題" />
-          <FaqList faqs={content.faqs} />
+      {/* 適用場所與常見問題：同一區塊、細線分隔 */}
+      <section className="pt-20 sm:pt-28">
+        <div className={container}>
+          {places && (
+            <GuidePart title="適用場所">
+              <PlaceStrip cards={places} />
+            </GuidePart>
+          )}
+          <GuidePart id="faq" title="常見問題">
+            <FaqLines faqs={content.faqs} />
+          </GuidePart>
         </div>
       </section>
     </PageShell>

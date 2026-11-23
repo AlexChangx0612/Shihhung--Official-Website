@@ -38,8 +38,8 @@ export function PhotoHero({
   image,
 }: {
   crumbs: Crumb[];
-  // 英文小標（例：About Shung）
-  eyebrow: string;
+  // 英文小標（例：About Shung）；沒給就不顯示
+  eyebrow?: string;
   title: React.ReactNode;
   subtitle: React.ReactNode;
   // 玻璃按鈕連結（沒給就不顯示按鈕）
@@ -78,10 +78,12 @@ export function PhotoHero({
           <div className="[&_[aria-current]]:text-white [&_a:hover]:text-white [&_ol]:text-white/70">
             <Breadcrumbs items={crumbs} />
           </div>
-          <p className="mt-10 text-[clamp(18px,1.6vw,24px)] font-normal tracking-[0.02em]">
-            {eyebrow}
-          </p>
-          <h1 className="mt-4 text-[clamp(40px,4.6vw,64px)] leading-tight font-bold">
+          {eyebrow && (
+            <p className="mt-10 text-[clamp(18px,1.6vw,24px)] font-normal tracking-[0.02em]">
+              {eyebrow}
+            </p>
+          )}
+          <h1 className={`${eyebrow ? "mt-4" : "mt-10"} text-[clamp(40px,4.6vw,64px)] leading-tight font-bold`}>
             {title}
           </h1>
           <p className="mt-6 max-w-[34em] text-base leading-[1.9] sm:text-lg">
