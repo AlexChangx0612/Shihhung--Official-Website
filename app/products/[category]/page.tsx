@@ -1,5 +1,7 @@
 // 匯入 Next.js 網頁中繼資料型別
 import type { Metadata } from "next";
+// 匯入 Google 字型：本頁另外載入 Noto Sans TC 的 400／500／700（全站只載入 700／900）
+import { Noto_Sans_TC } from "next/font/google";
 // 匯入 Next.js 圖片元件
 import Image from "next/image";
 // 匯入 Next.js 站內連結元件
@@ -14,6 +16,8 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import type { Faq } from "../../components/FaqList";
 // 匯入結構化資料元件
 import JsonLd from "../../components/JsonLd";
+// 匯入手機版「顯示全部」按鈕
+import MobileShowAll from "../../components/MobileShowAll";
 // 匯入內頁外框
 import PageShell from "../../components/PageShell";
 // 匯入區塊標題
@@ -28,6 +32,17 @@ import { getCatalog, getCategory, type CatalogItem } from "../../lib/products";
 import { absoluteUrl, faqJsonLd, ORG_ID, pageMetadata } from "../../lib/site";
 // 匯入共用樣式
 import { card, cardHover, container, outlineBtn, pageTop, section } from "../../lib/ui";
+
+// 字重示範用字型：只套用在產品系列頁內容（內文 400、小標與型號 500、標題 700）
+// 確認效果後若推到全站，改在 app/layout.tsx 的 notoSans 補上 400／500，並移除這裡
+const productSans = Noto_Sans_TC({
+  // 內文、小標、標題三種粗細
+  weight: ["400", "500", "700"],
+  // 字型下載完成前先用系統字顯示
+  display: "swap",
+  // 不預先載入（中文字型檔很大）
+  preload: false,
+});
 
 // 系列頁首照片（public/product-heroes）；有照片的系列改用滿版照片頁首，其餘維持去背圖版型
 // position／mobilePosition 為電腦版／手機版的裁切對齊位置
@@ -135,7 +150,7 @@ function PlaceStrip({ cards }: { cards: PlaceCard[] }) {
           <div className="relative aspect-[4/5] overflow-hidden rounded-[14px] bg-white lg:rounded-[18px]">
             <Image src={c.image} alt={c.alt} fill sizes="(min-width: 1440px) 270px, (min-width: 1024px) 19vw, (min-width: 640px) 32vw, 60vw" style={{ objectPosition: c.position }} className="object-cover" />
           </div>
-          <p className="mt-4 text-base font-bold text-ink sm:text-lg">{c.title}</p>
+          <p className="mt-4 text-base font-medium text-ink sm:text-lg">{c.title}</p>
         </li>
       ))}
     </ul>
@@ -148,7 +163,7 @@ function FaqLines({ faqs }: { faqs: Faq[] }) {
     <div>
       {faqs.map((f) => (
         <details key={f.q} className="group border-b border-ink/10 first:-mt-5 last:border-0">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 py-5 text-base font-bold text-ink transition-colors hover:text-brand-deep sm:py-6 sm:text-xl [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 py-5 text-base font-medium text-ink transition-colors hover:text-brand-deep sm:py-6 sm:text-xl [&::-webkit-details-marker]:hidden">
             {/* 最後兩個字綁在一起，避免手機上「？」單獨掉到下一行 */}
             <span>
               {f.q.slice(0, -2)}
@@ -172,30 +187,36 @@ function FaqLines({ faqs }: { faqs: Faq[] }) {
   );
 }
 
+// 手機版每組先顯示的款數（其餘按「顯示全部」才展開）
+const MOBILE_LIMIT = 6;
+
 // 商品卡片格：手機一排 2 張、平板 3 張、電腦 4 張；每張連到該品項的介紹頁
+// 手機上第 7 款以後先隱藏，按 MobileShowAll 的按鈕展開
 function ProductGrid({ items, categoryName }: { items: CatalogItem[]; categoryName: string }) {
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
-      {items.map((item) => (
-        <li key={item.slug}>
-          <Link href={item.href} className="group block">
-            {/* 正方形圓角圖片框（與首頁商品目錄相同） */}
-            <div className="relative aspect-square overflow-hidden rounded-[14px] bg-white lg:rounded-[18px]">
-              <Image
-                src={item.image}
-                alt={`世紘${categoryName} ${item.model} ${item.spec ?? ""}`}
-                fill
-                sizes="(min-width: 1024px) 330px, (min-width: 768px) 33vw, 50vw"
-                className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
-              />
-            </div>
-            {/* 型號（產品照右下角黃色字）與規格 */}
-            <span className="mt-3 block text-sm tracking-[0.08em] transition group-hover:text-brand-deep">{item.model}</span>
-            {item.spec && <span className="block text-xs leading-6 text-muted">{item.spec}</span>}
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <MobileShowAll total={items.length} limit={MOBILE_LIMIT}>
+      <ul className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+        {items.map((item, i) => (
+          <li key={item.slug} className={i >= MOBILE_LIMIT ? "max-sm:group-data-[open=false]/more:hidden" : undefined}>
+            <Link href={item.href} className="group block">
+              {/* 正方形圓角圖片框（與首頁商品目錄相同） */}
+              <div className="relative aspect-square overflow-hidden rounded-[14px] bg-white lg:rounded-[18px]">
+                <Image
+                  src={item.image}
+                  alt={`世紘${categoryName} ${item.model} ${item.spec ?? ""}`}
+                  fill
+                  sizes="(min-width: 1024px) 330px, (min-width: 768px) 33vw, 50vw"
+                  className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
+                />
+              </div>
+              {/* 型號（產品照右下角黃色字）與規格 */}
+              <span className="mt-3 block text-sm font-medium tracking-[0.08em] transition group-hover:text-brand-deep">{item.model}</span>
+              {item.spec && <span className="block text-xs leading-6 text-ink/75">{item.spec}</span>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </MobileShowAll>
   );
 }
 
@@ -220,13 +241,11 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
   const places = placeCards[cat.slug];
   // 標題拆成主標與副標（以「｜」分隔）
   const [titleMain, titleSub] = content.h1.split("｜");
-  // 照片頁首的說明：手機只顯示前兩句（避免橫幅被撐高、文字壓到照片主體），其餘句子平板以上才顯示
-  const sentences = content.intro.match(/[^。]+。?/g) ?? [content.intro];
-  const introHead = sentences.slice(0, 2).join("");
-  const introRest = sentences.slice(2).join("");
 
   return (
     <PageShell>
+      {/* 字重示範：本頁內文 400、小標與型號 500、標題 700（導覽列、頁尾與聯絡區維持原本粗體） */}
+      <div className={`${productSans.className} font-normal`}>
       {/* 結構化資料：分類頁＋常見問題 */}
       <JsonLd
         data={[
@@ -253,12 +272,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
                 {titleSub && <span className="mt-3 block text-[0.42em] leading-snug font-medium">{titleSub}</span>}
               </>
             }
-            subtitle={
-              <>
-                {introHead}
-                {introRest && <span className="max-sm:hidden">{introRest}</span>}
-              </>
-            }
+            subtitle={content.lead}
             link={{ href: "#contact", label: "專員為您提供服務" }}
             image={{ src: `/product-heroes/${cat.slug}.png`, ...hero }}
           />
@@ -272,7 +286,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
           <div className="mt-10 grid items-center gap-10 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
             <div className="max-w-3xl">
               <SectionTitle as="h1" align="left" title={content.h1} />
-              <p className="mt-6 text-sm leading-8 text-pretty text-muted sm:text-base sm:leading-8">{content.intro}</p>
+              <p className="mt-6 text-sm leading-8 text-pretty text-muted sm:text-base sm:leading-8">{content.lead}</p>
               <a href="#contact" className={`${outlineBtn} mt-10`}>
                 專員為您提供服務
               </a>
@@ -308,15 +322,11 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
                       <div className="relative aspect-square overflow-hidden rounded-[10px] bg-paper lg:rounded-[12px]">
                         <Image src={g.cover} alt={`世紘${g.name}`} fill sizes="(min-width: 1024px) 270px, (min-width: 640px) 30vw, 44vw" className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]" />
                       </div>
-                      <div className="flex flex-1 items-end gap-3 px-2 pt-3 pb-1.5 sm:px-3 sm:pt-4 sm:pb-2">
+                      <div className="flex flex-1 items-end px-2 pt-3 pb-1.5 sm:px-3 sm:pt-4 sm:pb-2">
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm tracking-[0.06em] text-balance text-ink sm:text-lg lg:text-base xl:text-lg">{g.name}</p>
+                          <p className="text-sm font-medium tracking-[0.06em] text-balance text-ink sm:text-lg lg:text-base xl:text-lg">{g.name}</p>
                           <p className="mt-0.5 text-xs text-muted sm:text-sm">{g.items.length} 款</p>
                         </div>
-                        {/* 向下箭頭：滑鼠移上往下移（1024～1279px 卡片較窄，隱藏以免擠到系列名稱） */}
-                        <span aria-hidden="true" className="hidden pb-0.5 text-lg text-brand-deep transition group-hover:translate-y-0.5 sm:inline lg:hidden xl:inline">
-                          ↓
-                        </span>
                       </div>
                     </a>
                   </li>
@@ -330,7 +340,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
             <ul className={`${container} flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}>
               {cat.groups.map((g) => (
                 <li key={g.id} className="shrink-0">
-                  <a href={`#${g.id}`} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm tracking-[0.08em] text-ink shadow-[0_0_0_1px_rgba(15,15,14,.08)] transition hover:text-brand-deep hover:shadow-[0_0_0_1px_rgba(214,31,42,.4)]">
+                  <a href={`#${g.id}`} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium tracking-[0.08em] text-ink shadow-[0_0_0_1px_rgba(15,15,14,.08)] transition hover:text-brand-deep hover:shadow-[0_0_0_1px_rgba(214,31,42,.4)]">
                     {g.name}
                     <span className="text-xs text-muted">{g.items.length}</span>
                   </a>
@@ -344,7 +354,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
             <section key={g.id} id={g.id} className={`scroll-mt-40 py-16 sm:scroll-mt-44 sm:py-20 ${i > 0 ? "border-t border-line" : ""}`}>
               <div className={`${container} grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-14 2xl:grid-cols-[300px_minmax(0,1fr)]`}>
                 <div className="lg:sticky lg:top-48 lg:self-start">
-                  <h2 className="text-2xl tracking-[0.12em] text-brand sm:text-3xl">{g.name}</h2>
+                  <h2 className="text-2xl font-bold tracking-[0.12em] text-brand sm:text-3xl">{g.name}</h2>
                   <p className="mt-4 text-sm leading-7 text-pretty text-muted">{g.desc}</p>
                   <p className="mt-6 border-t border-line pt-4 text-xs tracking-[0.25em] text-muted">共 {g.items.length} 款</p>
                 </div>
@@ -378,6 +388,7 @@ export default async function CategoryPage({ params }: PageProps<"/products/[cat
           </GuidePart>
         </div>
       </section>
+      </div>
     </PageShell>
   );
 }

@@ -23,7 +23,7 @@ export default function SectionTitle({
     // 置中時加上 text-center，靠左則不加
     <div className={align === "center" ? "text-center" : ""}>
       {/* 主標題：品牌紅，平板以上字級加大；空間不夠時只在「，」後換行，不把詞拆開 */}
-      <Heading className="text-2xl tracking-[0.12em] text-brand sm:text-3xl">
+      <Heading className="text-2xl font-bold tracking-[0.12em] text-brand sm:text-3xl">
         {title.split("，").map((part, i, all) => (
           <span key={part}>
             {/* 有「，」時各段不拆行；沒有「，」的長標題（內頁）則照常換行，避免手機超出畫面 */}

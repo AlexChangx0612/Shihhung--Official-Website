@@ -7,14 +7,14 @@ import { useLedgerReveal } from "./SpecLedger";
 // 匯入場所卡片型別
 import type { PlaceCard } from "../lib/place-cards";
 
-// 適用場所：照片卡片（白框圓角、照片內嵌），卡片下方為註解；手機橫向滑動，電腦一排並列
+// 適用場所：照片卡片（白框圓角、照片內嵌），卡片下方為註解；手機橫向滑動，電腦每張固定五分之一寬並置中（不論幾張都置中）
 export default function PlaceCards({ cards }: { cards: PlaceCard[] }) {
   const ref = useLedgerReveal();
   return (
     <div ref={ref}>
-      <ul className="-mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-8 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-5 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
+      <ul className="-mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:-mx-8 sm:px-8 lg:mx-0 lg:justify-center lg:gap-5 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
         {cards.map((c, i) => (
-          <li key={c.title} className="place-card w-[72%] flex-none snap-start sm:w-[42%] lg:w-auto" style={{ "--i": i } as React.CSSProperties}>
+          <li key={c.title} className="place-card w-[72%] flex-none snap-start sm:w-[42%] lg:w-[calc((100%-5rem)/5)]" style={{ "--i": i } as React.CSSProperties}>
             <figure>
               {/* 卡片：白框、照片內嵌，滑鼠移上照片緩慢放大、卡片微微浮起 */}
               <div className="group rounded-[18px] bg-white p-2 shadow-[0_0_0_1px_rgba(15,15,14,.06)] transition duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_0_0_1px_rgba(214,31,42,.18),0_22px_40px_-26px_rgba(15,15,14,.45)]">

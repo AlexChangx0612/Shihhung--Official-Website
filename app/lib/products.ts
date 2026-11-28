@@ -140,22 +140,15 @@ const categoryDefs: { id: string; slug: string; en: string; name: string; desc: 
     name: "迎賓欄柱",
     desc: "不鏽鋼迎賓欄柱，有圓球頭、皇冠頭、平蓋頭等柱頭造型，搭配絨布繩，典雅大方。",
     prefixes: ["003-", "004-"],
-    // 依型號系列分成四個小系列（id 不可與伸縮帶欄柱的 accessories 等重複，產品頁說明依 id 查詢）
+    // 依型號系列分成三個小系列（id 不可與伸縮帶欄柱的 accessories 等重複，產品頁說明依 id 查詢）
     groups: [
       {
         id: "rope-sw",
-        en: "SW SERIES",
+        en: "SW・CB SERIES",
         name: "迎賓欄柱",
-        desc: "SW 系列，有圓球頭、皇冠頭、平蓋頭三種柱頭造型，總高 860～997mm，搭配迎賓絨繩使用。",
-        // SW-R1S(A)、SW-R2G(A) 等柱身型號（絨繩 SW-R150 等不含括號）
-        match: (i) => /^SW-R\d[SG]\(/.test(i.model),
-      },
-      {
-        id: "rope-cb",
-        en: "CB SERIES",
-        name: "活動隔屏欄柱",
-        desc: "CB 系列，有圓球頭、皇冠頭、平蓋頭三種柱頭造型，總高 990～1105mm，可搭配圍幕桿與彈力勾組成活動隔屏。",
-        match: (i) => i.model.startsWith("CB-"),
+        desc: "SW、CB 系列，有圓球頭、皇冠頭、平蓋頭三種柱頭造型，總高 860～1105mm，搭配迎賓絨繩使用；CB 系列另可搭配圍幕桿與彈力勾。",
+        // SW-R1S(A)、SW-R2G(A) 等柱身型號（絨繩 SW-R150 等不含括號），以及 CB 系列柱身
+        match: (i) => /^SW-R\d[SG]\(/.test(i.model) || i.model.startsWith("CB-"),
       },
       {
         id: "rope-cords",
@@ -168,7 +161,7 @@ const categoryDefs: { id: string; slug: string; en: string; name: string; desc: 
         id: "rope-accessories",
         en: "ACCESSORIES",
         name: "欄柱配件",
-        desc: "壁鉤、彈力勾與 140cm、170cm 圍幕桿，搭配迎賓絨繩或活動隔屏使用。",
+        desc: "壁鉤、彈力勾與 140cm、170cm 圍幕桿，搭配迎賓欄柱與絨繩使用。",
         match: (i) => /^(RC|EH|BS)-/.test(i.model),
       },
     ],
